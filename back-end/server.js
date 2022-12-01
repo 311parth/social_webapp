@@ -242,9 +242,9 @@ app.get("/api/interaction/:id",authenticateToken,async (req,res)=>{
   })
 })
 
-
-
+//merged two patch request of like and dislike to one 
 app.patch("/api/interaction/:type",authenticateToken,async(req,res)=>{
+  //type: like or dislike 
   const seq = req.body.seq;
   const fill = req.body.fill;
   const typeOfInteraction = req.params.type;
@@ -260,6 +260,7 @@ app.patch("/api/interaction/:type",authenticateToken,async(req,res)=>{
         interaction = result.dislike;
     }
   }).clone()
+  //checking if user already interacted if yes then again interaction mean like to unlike
   if(fill===0)
     updated_interaction=interaction+1;
   else
@@ -270,17 +271,17 @@ app.patch("/api/interaction/:type",authenticateToken,async(req,res)=>{
     await interactionModel.findOne({"seq":seq},async(err,result)=>{
       if(err) throw err;
       result.like = updated_interaction
-     
-      // result.like = updated_interaction
-      if(!result.liked_uname.includes(username)){
-        result.liked_uname.push(username);
-      }
-      else{
+      
+      //checking if username already entered if yes then delete else  push
+      if(result.liked_uname.includes(username)){
         // console.log(result.liked_uname);
         result.liked_uname = result.liked_uname.filter(item=>item!==username);
+      }
+      else{
+        result.liked_uname.push(username);
       } 
       await result.save();
-      console.log(result);
+      // console.log(result);
     }).clone();
   }
   else if(typeOfInteraction==="dislike"){
@@ -288,12 +289,12 @@ app.patch("/api/interaction/:type",authenticateToken,async(req,res)=>{
       if(err) throw err;
       result.dislike = updated_interaction
 
-      if(!result.disliked_uname.includes(username)){
-        result.disliked_uname.push(username);
+      if(result.disliked_uname.includes(username)){
+        result.disliked_uname = result.disliked_uname.filter(item=>item!==username);
       }
       else
       {
-        result.disliked_uname = result.disliked_uname.filter(item=>item!==username);
+        result.disliked_uname.push(username);
       }
       await result.save();
       console.log(result);

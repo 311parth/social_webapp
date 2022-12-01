@@ -43,6 +43,13 @@ function Post(props) {
                 element.classList.add("fill-1")
                 setFill(element);
             }
+            var element = document.getElementById("material-symbols-outlined-dislike-"+props.id)
+            if(interactionData.disliked_uname.includes(username)){
+                console.log(interactionData.disliked_uname)
+                // element.classList.toggle("fill-1")
+                element.classList.add("fill-1")
+                setFill(element);
+            }
         })
 
 

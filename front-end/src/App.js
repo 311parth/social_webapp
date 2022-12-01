@@ -1,0 +1,28 @@
+import  './main.css'
+import { BrowserRouter, Routes, Route , Link} from "react-router-dom";
+import HomePage from './components/pages/HomePage';
+import SignupPage from './components/pages/SignupPage';
+import LoginPage from './components/pages/LoginPage';
+import PostPage from './components/pages/PostPage';
+import LogoutPage from './components/pages/LogoutPage';
+function App() {
+
+  return (
+    <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<LoginPage/>}></Route>
+          <Route path="/home"  element={<HomePage/>}></Route>
+    
+          <Route path="/signup" element={<SignupPage/>}></Route>
+          <Route path="/login" element={<LoginPage/>}></Route>
+          <Route path="/post" element={<PostPage/>}></Route>
+
+          <Route path="/logout" element={<LogoutPage/>}></Route>
+
+
+        </Routes>
+    </BrowserRouter>
+  );
+}
+
+export default App;

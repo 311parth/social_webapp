@@ -23,16 +23,7 @@ function Post(props) {
         return {like:0,dislike:0};
     });
 
-    const renderAfterCalled = useRef(false);
 
-//     useEffect(() => {
-//     if (!renderAfterCalled.current) {
-//       // your API call func
-      
-//     }
-//     renderAfterCalled.current = true;
-    
-// }, []);
 
 
     var interactionData = {};
@@ -40,7 +31,6 @@ function Post(props) {
     
     useEffect(() => {
         function fetchIt() {
-            
         fetch("/api/interaction/"+props.seq, {
             method: 'GET',
             headers: {
@@ -124,6 +114,43 @@ function Post(props) {
         body.fill===0? setInteraction({like:interaction.like,dislike:interaction.dislike+1}) :  setInteraction({like:interaction.like,dislike:interaction.dislike-1})
     }
 
+    const isfetch = useRef(false);
+    const [fetchNow,setFetchNow] = useState(0);
+    useEffect(() => {
+        if (!isfetch.current) {
+        // your API call func
+            console.log("u")
+            fetch("/api/interaction/"+props.seq, 
+            {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: "include",
+            }
+            ).then((response) => response.json())
+            .then(async (data) => {
+                interactionData = data;
+                console.log(interactionData)
+    setInteraction({like : interactionData.like,dislike:interactionData.dislike})
+
+                // document.getElementById("like-count-"+props.id).textContent = data.like;
+                // document.getElementById("dislike-count-"+props.id).textContent = data.dislike;
+            })
+        }
+
+        isfetch.current = true;
+    }, [fetchNow]);
+
+
+    setTimeout(() => {
+        isfetch.current=false;
+        if(fetchNow===0)
+            setFetchNow(1);
+        else
+            setFetchNow(0);
+    }, 5000);
+    
 
     function refreshStats(params) {
         console.log("u")
@@ -142,7 +169,7 @@ function Post(props) {
         })
     }
     
-    setInterval(refreshStats,10000)
+    // setInterval(refreshStats,10000)
    
 
 

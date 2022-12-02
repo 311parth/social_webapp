@@ -10,16 +10,17 @@ function setFill(element){
         element.style = " font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 48"
     }
 }
+
+
 function Post(props) {
 
-    const [likeCount,setLikeCount] = useState(1);
-    const [dislikeCount,setDislikeCount] = useState(1);
 
-    // const [interactionData,setInteractionData] = useState({})
+    const [interaction,setInteraction]  = useState({like : 0,dislike:0});
+
+
     var interactionData = {};
     const username = useContext(UsernameContext);
-    // console.log(username);
-
+    
     useEffect(() => {
         fetch("/api/interaction/"+props.seq, {
             method: 'GET',
@@ -29,30 +30,23 @@ function Post(props) {
             credentials: "include",
         }).then((response) => response.json())
         .then(async(data) => {
-            setLikeCount(data.like);
-            setDislikeCount(data.dislike);
-            // setInteractionData(data);//it will set after data later (not immediate)
+            setInteraction({like:data.like,dislike: data.dislike})
             interactionData = data;
-            console.log("in",interactionData);
-            // console.log(data,typeof(data))
             //loading post interaction either fill or unfill
             var element = document.getElementById("material-symbols-outlined-like-"+props.id)
             if(interactionData.liked_uname.includes(username)){
-                console.log(interactionData.liked_uname)
-                // element.classList.toggle("fill-1")
+                // console.log(interactionData.liked_uname)
                 element.classList.add("fill-1")
                 setFill(element);
             }
+
             var element = document.getElementById("material-symbols-outlined-dislike-"+props.id)
             if(interactionData.disliked_uname.includes(username)){
-                console.log(interactionData.disliked_uname)
-                // element.classList.toggle("fill-1")
+                // console.log(interactionData.disliked_uname)
                 element.classList.add("fill-1")
                 setFill(element);
             }
         })
-
-
     }, [])
 
 
@@ -64,25 +58,15 @@ function Post(props) {
     
     const submit_like=()=>{
         var element = document.getElementById("material-symbols-outlined-like-"+props.id)
-
-        // var element = document.getElementById("material-symbols-outlined-like-"+props.id)
-        // if(interactionData.liked_uname.includes(username)){
-        //     console.log(interactionData.liked_uname)
-        // }
         element.classList.toggle("fill-1")
         console.log(props.seq)
         const body= {
             seq: props.seq,
             fill : 0,
         }
-        if(element.classList.contains("fill-1"))
-        {
-            body.fill =  0;
-        }
-        else{
-            body.fill =1;
-        }
-        console.log(body);
+        element.classList.contains("fill-1") ? body.fill=0 : body.fill=1;
+
+        // console.log(body);
         fetch("/api/interaction/like",{
             method:"PATCH",
             headers: {
@@ -90,39 +74,20 @@ function Post(props) {
             },
             credentials: "include",
             body : JSON.stringify(body)
-        })
-        .then((res)=>res.json())
-        .then((data)=>{
-            // setLikeCount(data.like)
-            // console.log(data)
-        })
-        setFill(element);
-        if(body.fill===0)
-        {
-            setLikeCount(likeCount+1)
-        }
-        else
-        {
-            setLikeCount(likeCount-1)
+        }).then((res)=>res.json()).then((data)=>{})
 
-        }
+        setFill(element);
+        body.fill===0 ? setInteraction({like : interaction.like+1,dislike : interaction.dislike}) : setInteraction({like:interaction.like-1,dislike:interaction.dislike})
     }
     const submit_dislike=()=>{
 
         var element = document.getElementById("material-symbols-outlined-dislike-"+props.id)
         element.classList.toggle("fill-1")
-
         const body= {
             seq: props.seq,
             fill : 0
         }
-        if(element.classList.contains("fill-1"))
-        {
-            body.fill =  0;
-        }
-        else{
-            body.fill =1;
-        }
+        element.classList.contains("fill-1") ? body.fill=0 : body.fill=1;
         fetch("/api/interaction/dislike",{
             method:"PATCH",
             headers: {
@@ -132,19 +97,26 @@ function Post(props) {
             body : JSON.stringify(body)
         })
         .then((res)=>res.json())
-        .then((data)=>{
-            
-        })
-
+        .then((data)=>{})
         setFill(element);
-        if(body.fill===0)
+        body.fill===0? setInteraction({like:interaction.like,dislike:interaction.dislike+1}) :  setInteraction({like:interaction.like,dislike:interaction.dislike-1})
+    }
+
+
+    function refreshStats(params) {
+        console.log("u")
+        fetch("/api/interaction/"+props.seq, 
         {
-            setDislikeCount(dislikeCount+1)
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: "include",
         }
-        else
-        {
-            setDislikeCount(dislikeCount-1)
-        }
+        ).then((response) => response.json())
+        .then(async (data) => {
+                setInteraction({like:data.like,dislike:data.dislike})
+        })
     }
 
     const num=0;
@@ -165,7 +137,7 @@ function Post(props) {
                                 thumb_up_off
                             </span>
                             <span className="post-like-count post-interaction-count">
-                                {likeCount}
+                                {interaction.like}
                             </span>
                         </button>
 
@@ -175,9 +147,11 @@ function Post(props) {
                                 thumb_down_off
                             </span>
                             <span className="post-dislike-count post-interaction-count">
-                                {dislikeCount}
+                                {interaction.dislike}
                             </span>
                         </button>
+
+                        <button className="interaction-btn" onClick={refreshStats}>Refresh stats</button>
                     </div>
 
 

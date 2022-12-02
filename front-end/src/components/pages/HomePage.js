@@ -51,12 +51,8 @@ function HomePage() {
             },
             credentials: "include",
         }).then((res) => {
-            if (res.ok) {
-                return res.json();
-            }
-            else {
-                res.json({ "isok": 0 })
-            }
+            if (res.ok) return res.json();
+            else res.json({ "isok": 0 })
         })
             .then(async (data) => {
                 await setPost(data)

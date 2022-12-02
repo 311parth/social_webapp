@@ -31,11 +31,18 @@ app.use(cors());
 
 const session = require("express-session");
 
+var reqCount =0;
 
 app.use(express.static(__dirname+"../front-end/build"))
 
 app.get("/", (req, res) => {
+// reqCount++;
+// console.log(reqCount,"get / ")
+
+
+
   res.send("he");
+
 });
 
 
@@ -43,6 +50,10 @@ app.get("/", (req, res) => {
  
 
 app.post("/checksignupusername",(req,res)=>{
+// reqCount++;
+// console.log(reqCount,"get /checksignupusername")
+
+
     console.log(req.body)
     console.log(req.body.signupUname)
 
@@ -62,10 +73,18 @@ function islogged(req,res,next) {
 }
 
 app.get("/home",islogged,(req,res)=>{
+// reqCount++;
+// console.log(reqCount,"get /home")
+
+
   res.json({"a":1});
 })
 
 app.post("/login", (req, res) => {
+// reqCount++;
+// console.log(reqCount,"post /login")
+
+
   var loginUname = req.body.loginUname;
   var loginPw = req.body.loginPassword;
 
@@ -97,6 +116,11 @@ app.post("/login", (req, res) => {
 
 
 app.post("/logout", (req, res) => {
+// reqCount++;
+// console.log(reqCount,"post /loguot")
+
+
+console.log(reqCount)
   res.clearCookie("secret").clearCookie("uname");
   res.json({"msg":"looged out succesfully"})
 });
@@ -104,6 +128,10 @@ app.post("/logout", (req, res) => {
 
 
 app.post("/signup", async (req, res) => {
+// reqCount++;
+// console.log(reqCount,"post /signup")
+
+
   var signupName = req.body.signupName;
   var signupUname = req.body.signupUname;
   var signupPw = req.body.signupPassword;
@@ -135,12 +163,15 @@ app.post("/signup", async (req, res) => {
 var seq =0;
 
 postModel.findOne({}, (err, result) =>{
+
   if(result)
     seq = result.seq;
 }).sort({seq:-1});
 
 
 function getLoggedUser(token, uname) {
+
+
   //parameters : cookies.secret and cookies.uname
   var logged_user="";
   jwt.verify(token, process.env.TOKEN_SECRET, (err, user) => {
@@ -173,18 +204,30 @@ function authenticateToken(req, res, next) {
 
 
 app.get("/api", (req, res) => {
+// reqCount++;
+// console.log(reqCount,"get /api")
+
+
   res.send("jjj");
 });
 
 
 
 app.get("/api/get_username",authenticateToken,(req,res)=>{
+// reqCount++;
+// console.log(reqCount,"get /api/get_username")
+
+
   const username = jwt.verify(req.cookies.secret,process.env.TOKEN_SECRET)
   res.json({"username":`${username.uname}`})
 })
 
 
 app.post("/api/post",authenticateToken,async(req,res)=>{
+// reqCount++;
+// console.log(reqCount,"post /api/post")
+
+
   var uname = req.body.postUname;
   var title = req.body.postTitle;
   var desc = req.body.postDesc;
@@ -207,6 +250,10 @@ app.post("/api/post",authenticateToken,async(req,res)=>{
 })
 
 app.get("/api/post", authenticateToken, async (req, res) => {
+// reqCount++;
+// console.log(reqCount,"get /api/post")
+
+
   await postModel.find(
       { uname: { $ne: getLoggedUser(req.cookies.secret, req.cookies.uname) } },
       { _id: 0, time: 0, __v: 0 },async (err, result) => {
@@ -224,6 +271,10 @@ app.get("/api/post", authenticateToken, async (req, res) => {
 }); 
 
 app.get("/api/interaction/:id",authenticateToken,async (req,res)=>{
+// reqCount++;
+// console.log(reqCount,"get /api/interaction/:id")
+
+
   const username = getLoggedUser(req.cookies.secret,req.cookies.uname);
   const seq = req.params.id;
   interactionModel.findOne({"seq" : seq},async(err,result)=>{
@@ -244,13 +295,20 @@ app.get("/api/interaction/:id",authenticateToken,async (req,res)=>{
 
 //merged two patch request of like and dislike to one 
 app.patch("/api/interaction/:type",authenticateToken,async(req,res)=>{
+// reqCount++;
+// console.log(reqCount,"patch /api/interaction/:type")
+
+
   //type: like or dislike 
+
   const seq = req.body.seq;
   const fill = req.body.fill;
   const typeOfInteraction = req.params.type;
   var interaction;
   var updated_interaction;
   const username = getLoggedUser(req.cookies.secret,req.cookies.uname)
+
+  //fetching interaction data of post 
   await interactionModel.findOne({"seq":seq},async(err,result)=>{
     if(err) throw err;
     if(result){
@@ -260,19 +318,21 @@ app.patch("/api/interaction/:type",authenticateToken,async(req,res)=>{
         interaction = result.dislike;
     }
   }).clone()
+
+
   //checking if user already interacted if yes then again interaction mean like to unlike
   if(fill===0)
     updated_interaction=interaction+1;
   else
     updated_interaction=interaction-1;
   
-
+  //2 division according type of interaction
   if(typeOfInteraction==="like"){
     await interactionModel.findOne({"seq":seq},async(err,result)=>{
       if(err) throw err;
       result.like = updated_interaction
       
-      //checking if username already entered if yes then delete else  push
+      //checking if username already entered if yes then delete else push into array
       if(result.liked_uname.includes(username)){
         // console.log(result.liked_uname);
         result.liked_uname = result.liked_uname.filter(item=>item!==username);

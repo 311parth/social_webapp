@@ -15,11 +15,10 @@ var fetchNow = 0;
 
 function Post(props) {
 
-
     // const [interaction,setInteraction]  = useState({like : 0,dislike:0});
 
     const [interaction,setInteraction]  = useState(()=>{
-        console.log("setting interaction only once")
+        // console.log("setting interaction only once")
         return {like:0,dislike:0};
     });
 
@@ -70,7 +69,7 @@ function Post(props) {
     const submit_like=()=>{
         var element = document.getElementById("material-symbols-outlined-like-"+props.id)
         element.classList.toggle("fill-1")
-        console.log(props.seq)
+        // console.log(props.seq)
         const body= {
             seq: props.seq,
             fill : 0,
@@ -119,7 +118,7 @@ function Post(props) {
     useEffect(() => {
         if (!isfetch.current) {
         // your API call func
-            console.log("u")
+            // console.log("u")
             fetch("/api/interaction/"+props.seq, 
             {
                 method: 'GET',
@@ -131,8 +130,8 @@ function Post(props) {
             ).then((response) => response.json())
             .then(async (data) => {
                 interactionData = data;
-                console.log(interactionData)
-    setInteraction({like : interactionData.like,dislike:interactionData.dislike})
+                // console.log(interactionData)
+                setInteraction({like : interactionData.like,dislike:interactionData.dislike})
 
                 // document.getElementById("like-count-"+props.id).textContent = data.like;
                 // document.getElementById("dislike-count-"+props.id).textContent = data.dislike;
@@ -151,27 +150,6 @@ function Post(props) {
             setFetchNow(0);
     }, 5000);
     
-
-    function refreshStats(params) {
-        console.log("u")
-        fetch("/api/interaction/"+props.seq, 
-        {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            credentials: "include",
-        }
-        ).then((response) => response.json())
-        .then(async (data) => {
-            document.getElementById("like-count-"+props.id).textContent = data.like;
-            document.getElementById("dislike-count-"+props.id).textContent = data.dislike;
-        })
-    }
-    
-    // setInterval(refreshStats,10000)
-   
-
 
     const num=0;
 

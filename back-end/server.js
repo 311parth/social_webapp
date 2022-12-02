@@ -271,8 +271,8 @@ app.get("/api/post", authenticateToken, async (req, res) => {
 }); 
 
 app.get("/api/interaction/:id",authenticateToken,async (req,res)=>{
-reqCount++;
-console.log(reqCount,"get /api/interaction/:id")
+// reqCount++;
+// console.log(reqCount,"get /api/interaction/:id")
 
 
   const username = getLoggedUser(req.cookies.secret,req.cookies.uname);

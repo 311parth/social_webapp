@@ -1,7 +1,7 @@
 import React from 'react'
 import Navbar from '../Navbar'
 import Post from '../Post'
-
+import Sidebar from '../../Sidebar'
 import { useEffect, useState ,createContext,useContext } from 'react'
 
 export const UsernameContext = createContext();
@@ -59,8 +59,6 @@ function HomePage() {
             })
     }, [])
 
-
-
     if (errorMsg === 1) {
         return (
             <h1>Loggin First 😡</h1>
@@ -74,12 +72,20 @@ function HomePage() {
                     {errorMsg === 1 ? <h1>Wrong Username,Password</h1> : ""}
                     <Navbar/>
 
-                        {post.map((post, i) => {
-                            return <Post id={i.toString()} seq={post.seq} uname={post.uname} title={post.title} desc={post.desc} key={i} />
-                        })
-                    }
+                    <div className="home-page-container">
+                        <div>
+
+                            {post.map((post, i) => {
+                                return <Post id={i.toString()} seq={post.seq} uname={post.uname} title={post.title} desc={post.desc} key={i} />
+                                })
+                            }
+                        </div>
                     
                     {/* <Sidebar/> */}
+                        <Sidebar/>
+
+                    </div>
+
                 </UsernameContext.Provider>
             </>
         )

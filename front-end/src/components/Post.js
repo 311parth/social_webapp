@@ -10,12 +10,16 @@ function setFill(element){
         element.style = " font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 48"
     }
 }
-
-
 function Post(props) {
 
 
-    const [interaction,setInteraction]  = useState({like : 0,dislike:0});
+    // const [interaction,setInteraction]  = useState({like : 0,dislike:0});
+
+    const [interaction,setInteraction]  = useState(()=>{
+        console.log("setting interaction only once")
+        return {like:0,dislike:0};
+    });
+
 
 
     var interactionData = {};
@@ -78,6 +82,7 @@ function Post(props) {
 
         setFill(element);
         body.fill===0 ? setInteraction({like : interaction.like+1,dislike : interaction.dislike}) : setInteraction({like:interaction.like-1,dislike:interaction.dislike})
+
     }
     const submit_dislike=()=>{
 
@@ -119,6 +124,7 @@ function Post(props) {
         })
     }
 
+    // setInterval(refreshStats,5000)
     const num=0;
 
     return (
@@ -151,7 +157,6 @@ function Post(props) {
                             </span>
                         </button>
 
-                        <button className="interaction-btn" onClick={refreshStats}>Refresh stats</button>
                     </div>
 
 

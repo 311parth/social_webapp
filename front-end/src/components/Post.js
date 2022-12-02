@@ -10,6 +10,9 @@ function setFill(element){
         element.style = " font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 48"
     }
 }
+
+var fetchNow = 0;
+
 function Post(props) {
 
 
@@ -20,12 +23,24 @@ function Post(props) {
         return {like:0,dislike:0};
     });
 
+    const renderAfterCalled = useRef(false);
+
+//     useEffect(() => {
+//     if (!renderAfterCalled.current) {
+//       // your API call func
+      
+//     }
+//     renderAfterCalled.current = true;
+    
+// }, []);
 
 
     var interactionData = {};
     const username = useContext(UsernameContext);
     
     useEffect(() => {
+        function fetchIt() {
+            
         fetch("/api/interaction/"+props.seq, {
             method: 'GET',
             headers: {
@@ -43,7 +58,6 @@ function Post(props) {
                 element.classList.add("fill-1")
                 setFill(element);
             }
-
             var element = document.getElementById("material-symbols-outlined-dislike-"+props.id)
             if(interactionData.disliked_uname.includes(username)){
                 // console.log(interactionData.disliked_uname)
@@ -51,6 +65,9 @@ function Post(props) {
                 setFill(element);
             }
         })
+        
+        }
+        fetchIt();
     }, [])
 
 
@@ -120,11 +137,15 @@ function Post(props) {
         }
         ).then((response) => response.json())
         .then(async (data) => {
-                setInteraction({like:data.like,dislike:data.dislike})
+            document.getElementById("like-count-"+props.id).textContent = data.like;
+            document.getElementById("dislike-count-"+props.id).textContent = data.dislike;
         })
     }
+    
+    setInterval(refreshStats,10000)
+   
 
-    // setInterval(refreshStats,5000)
+
     const num=0;
 
     return (
@@ -142,7 +163,7 @@ function Post(props) {
                             <span className="material-symbols-outlined" id= {"material-symbols-outlined-like-"+props.id}  >
                                 thumb_up_off
                             </span>
-                            <span className="post-like-count post-interaction-count">
+                            <span className="post-like-count post-interaction-count" id={"like-count-"+props.id}>
                                 {interaction.like}
                             </span>
                         </button>
@@ -152,10 +173,11 @@ function Post(props) {
                             <span className="material-symbols-outlined " id={"material-symbols-outlined-dislike-"+props.id}>
                                 thumb_down_off
                             </span>
-                            <span className="post-dislike-count post-interaction-count">
+                            <span className="post-dislike-count post-interaction-count" id={"dislike-count-"+props.id} >
                                 {interaction.dislike}
                             </span>
                         </button>
+
 
                     </div>
 

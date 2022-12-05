@@ -26,6 +26,8 @@ const {postModel} = require("./model/postModel")
 
 const {interactionModel} = require("./model/interactionModel")
 
+const {followersModel} = require("./model/followersModel")
+
 var cors = require("cors");
 app.use(cors());    
 
@@ -254,20 +256,22 @@ app.get("/api/post", authenticateToken, async (req, res) => {
 // console.log(reqCount,"get /api/post")
 
 
-  await postModel.find(
-      { uname: { $ne: getLoggedUser(req.cookies.secret, req.cookies.uname) } },
-      { _id: 0, time: 0, __v: 0 },async (err, result) => {
-        if (err) {
-          res.sendStatus(500);
-          return;
-        }
-        if (result) {
-          await res.send(result);
-        } else {
-          return res.status("404").json({ err });
-        }
-      }
-    ).sort({ seq: -1 }).limit(5).clone();
+	await postModel.find(
+		{ uname: { $ne: getLoggedUser(req.cookies.secret, req.cookies.uname) } },
+		{ _id: 0, time: 0, __v: 0 }).sort({ seq: -1 }
+	).limit(5).clone().exec(async (err, result) => {
+			if (err) {
+				res.sendStatus(500);
+				return;
+			}
+			if (result) {
+				await res.send(result);
+			} else {
+				return res.status("404").json({ err });
+			}
+		}
+	);
+
 }); 
 
 app.get("/api/interaction/:id",authenticateToken,async (req,res)=>{
@@ -362,6 +366,75 @@ app.patch("/api/interaction/:type",authenticateToken,async(req,res)=>{
   }
   await res.json({"isok":1});
 })
+
+
+app.post("/api/follow",authenticateToken,(req,res)=>{
+  const username = req.body.username;
+  const followedUsername = req.body.followedUsername;
+  // console.log(req.body)
+  followersModel.findOne({username:username},async(err,result)=>{
+    if(err)throw err;
+    if(result){
+      if(!result.following.includes(followedUsername)){
+        //adding followed username to following array
+        result.following = [...result.following,followedUsername]
+        await result.save();
+        //it means now user is  following so button text will be following
+        res.json({"isok":1,"msg" : "Following"})
+
+      }else{
+        result.following = result.following.filter((username)=>username!== followedUsername)
+        await result.save().then(()=>{
+          //it means now user is not following so button text will be follow
+          res.json({"isok":1,"msg" : "Follow"})
+
+        });
+      }
+      // console.log(result);
+    }
+    else{
+      //creating new user entry if username not found in db
+      const new_user = await new followersModel({
+        username:username,
+        following : [followedUsername]
+      }).save().then(()=>{
+        res.json({"isok":1,"msg" : "Following"})
+      });
+    }
+  })
+  // res.json({"isok":0})
+})
+
+
+app.post("/api/random/followcard",async(req,res)=>{
+	const username = req.body.username;
+  let loggedUserData;
+  await followersModel.find({username:username},(err,result)=>{
+    if(err)throw err;
+    if(result) loggedUserData = result
+  }).clone()
+  // console.log(loggedUserData)
+  // console.log(1,loggedUserData[0].following,typeof(loggedUserData[0].following))
+  
+  loggedUserData[0].following.push(username);//temporary addding username to remove it from list of all unfollowing user
+	await followersModel.find(
+    {
+      "username" : {$nin:loggedUserData[0].following}
+    },{username:1,_id :0}).clone().limit(50).exec((err,result)=>{
+		var array = [];
+		if(err) throw err;
+		else{
+			for (const i in result) {
+				array.push(result[i].username)
+			}
+			
+			res.json({"isok" : 1,
+				usernameArray : array
+			})
+		}	
+	})
+})
+
 
 
 

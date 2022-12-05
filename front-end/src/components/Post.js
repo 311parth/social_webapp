@@ -1,7 +1,6 @@
 import React,{useState,useRef,useEffect,useContext} from 'react'
 import {UsernameContext} from "./pages/HomePage"
 
-
 function setFill(element){
     if (element.classList.contains("fill-1")) {
         element.style = " font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 48"

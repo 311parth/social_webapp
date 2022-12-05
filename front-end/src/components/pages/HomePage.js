@@ -1,10 +1,11 @@
 import React from 'react'
 import Navbar from '../Navbar'
 import Post from '../Post'
-import Sidebar from '../../Sidebar'
+import Sidebar from '../Sidebar'
 import { useEffect, useState ,createContext,useContext } from 'react'
-
+import FetchError from '../FetchError'
 export const UsernameContext = createContext();
+
 
 function HomePage() {
 
@@ -65,34 +66,40 @@ function HomePage() {
         )
     }
     if (window.sessionStorage.getItem("islogged") === "1") {
-        return (
-            <>
-                <UsernameContext.Provider value={username}>
-
-                    {errorMsg === 1 ? <h1>Wrong Username,Password</h1> : ""}
-                    <Navbar/>
-
-                    <div className="home-page-container">
-                        <div>
-
-                            {post.map((post, i) => {
-                                return <Post id={i.toString()} seq={post.seq} uname={post.uname} title={post.title} desc={post.desc} key={i} />
-                                })
-                            }
+        if(username){//if any only username is not undefined then load home page
+            return (
+                <>
+                    <UsernameContext.Provider value={username}>
+    
+                        {errorMsg === 1 ? <h1>Wrong Username,Password</h1> : ""}
+                        <Navbar/>
+    
+                        <div className="home-page-container">
+                            <div>
+    
+                                {post.map((post, i) => {
+                                    return <Post id={i.toString()} seq={post.seq} uname={post.uname} title={post.title} desc={post.desc} key={i} />
+                                    })
+                                }
+                            </div>
+                        
+                        {/* <Sidebar/> */}
+                            <Sidebar/>
+    
                         </div>
-                    
-                    {/* <Sidebar/> */}
-                        <Sidebar/>
-
-                    </div>
-
-                </UsernameContext.Provider>
-            </>
-        )
+    
+                    </UsernameContext.Provider>
+                </>
+            )
+        }
+        else{
+            return(
+                <FetchError/>
+            )
+        }
     }
     else if (window.sessionStorage.getItem("islogged") !== "1") {
         window.location.href = "/login"
     }
 }
-
 export default HomePage

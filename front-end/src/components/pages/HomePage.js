@@ -56,7 +56,7 @@ function HomePage() {
             else res.json({ "isok": 0 })
         })
             .then(async (data) => {
-                console.log(data);
+                // console.log(data);
                 await setPost(data)
             })
     }, [])
@@ -71,7 +71,6 @@ function HomePage() {
             return (
                 <>
                     <UsernameContext.Provider value={username}>
-    
                         {errorMsg === 1 ? <h1>Wrong Username,Password</h1> : ""}
                         <Navbar/>
     

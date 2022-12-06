@@ -56,6 +56,7 @@ function HomePage() {
             else res.json({ "isok": 0 })
         })
             .then(async (data) => {
+                console.log(data);
                 await setPost(data)
             })
     }, [])
@@ -75,13 +76,13 @@ function HomePage() {
                         <Navbar/>
     
                         <div className="home-page-container">
-                            <div>
+                            <div className="home-post-container">
     
                                 {post.map((post, i) => {
                                     return <Post id={i.toString()} seq={post.seq} uname={post.uname} title={post.title} desc={post.desc} key={i} />
                                     })
                                 }
-                            </div>
+                            </div>  
                         
                         {/* <Sidebar/> */}
                             <Sidebar/>

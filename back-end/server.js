@@ -171,23 +171,6 @@ postModel.findOne({}, (err, result) =>{
 }).sort({seq:-1});
 
 
-function getLoggedUser(token, uname) {
-
-
-  //parameters : cookies.secret and cookies.uname
-  var logged_user="";
-  jwt.verify(token, process.env.TOKEN_SECRET, (err, user) => {
-    // console.log(user,typeof(user))
-    if (err) return null;
-    if (uname !== user.uname) return null;
-    else
-    logged_user = user.uname; 
-  });
-  return logged_user;
-}
-
-
-
 function authenticateToken(req, res, next) {
   const token = req.cookies.secret;
 
@@ -203,6 +186,36 @@ function authenticateToken(req, res, next) {
 
   });
 }
+function getLoggedUser(token, uname) {
+  //parameters : cookies.secret and cookies.uname
+  var logged_user="";
+  jwt.verify(token, process.env.TOKEN_SECRET, (err, user) => {
+    // console.log(user,typeof(user))
+    if (err) return null;
+    if (uname !== user.uname) return null;
+    else
+    logged_user = user.uname; 
+  });
+  return logged_user;
+}
+
+
+async function getLoggedUserData(username) {
+  let loggedUserData;
+  return await followersModel.find({username:username},(err,result)=>{
+    // console.log(result,typeof(result))
+    if(err)throw err;
+    if(result) {
+      // console.log(2,result);
+      // return result;
+      loggedUserData = result;
+    }
+  }).clone()
+  return loggedUserData;
+}
+
+
+
 
 
 app.get("/api", (req, res) => {
@@ -255,13 +268,15 @@ app.get("/api/post", authenticateToken, async (req, res) => {
 // reqCount++;
 // console.log(reqCount,"get /api/post")
 
-
+  const username = getLoggedUser(req.cookies.secret, req.cookies.uname);
+  const loggedUserData = await getLoggedUserData(username);
+  var followingUsers =  loggedUserData[0].following ;
 	await postModel.find(
-		{ uname: { $ne: getLoggedUser(req.cookies.secret, req.cookies.uname) } },
+		{ uname: { $in: followingUsers } },
 		{ _id: 0, time: 0, __v: 0 }).sort({ seq: -1 }
-	).limit(5).clone().exec(async (err, result) => {
+	).limit(20).clone().exec(async (err, result) => {
 			if (err) {
-				res.sendStatus(500);
+				res.sendStatus(500);  
 				return;
 			}
 			if (result) {
@@ -274,12 +289,16 @@ app.get("/api/post", authenticateToken, async (req, res) => {
 
 }); 
 
+
+
 app.get("/api/interaction/:id",authenticateToken,async (req,res)=>{
 // reqCount++;
 // console.log(reqCount,"get /api/interaction/:id")
 
 
   const username = getLoggedUser(req.cookies.secret,req.cookies.uname);
+
+
   const seq = req.params.id;
   interactionModel.findOne({"seq" : seq},async(err,result)=>{
     if(err) throw err;
@@ -367,7 +386,6 @@ app.patch("/api/interaction/:type",authenticateToken,async(req,res)=>{
   await res.json({"isok":1});
 })
 
-
 app.post("/api/follow",authenticateToken,(req,res)=>{
   const username = req.body.username;
   const followedUsername = req.body.followedUsername;
@@ -406,33 +424,34 @@ app.post("/api/follow",authenticateToken,(req,res)=>{
 })
 
 
+
+
+
 app.post("/api/random/followcard",async(req,res)=>{
-	const username = req.body.username;
-  let loggedUserData;
-  await followersModel.find({username:username},(err,result)=>{
-    if(err)throw err;
-    if(result) loggedUserData = result
-  }).clone()
-  // console.log(loggedUserData)
+  const username = req.body.username;
+  
+    let loggedUserData = await getLoggedUserData(username);
+ 
+    // console.log(loggedUserData);
+    loggedUserData[0].following.push(username);//temporary addding username to remove it from list of all unfollowing user
+    await followersModel.find({
+        "username" : {$nin:loggedUserData[0].following}
+      },{username:1,_id :0}).clone().limit(50).exec((err,result)=>{
+      var array = [];
+      if(err) throw err;
+      else{
+        for (const i in result) {
+          array.push(result[i].username)
+        }
+        res.json({"isok" : 1,
+          usernameArray : array
+        })
+      }
+    })
+
+
   // console.log(1,loggedUserData[0].following,typeof(loggedUserData[0].following))
   
-  loggedUserData[0].following.push(username);//temporary addding username to remove it from list of all unfollowing user
-	await followersModel.find(
-    {
-      "username" : {$nin:loggedUserData[0].following}
-    },{username:1,_id :0}).clone().limit(50).exec((err,result)=>{
-		var array = [];
-		if(err) throw err;
-		else{
-			for (const i in result) {
-				array.push(result[i].username)
-			}
-			
-			res.json({"isok" : 1,
-				usernameArray : array
-			})
-		}	
-	})
 })
 
 

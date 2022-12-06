@@ -202,7 +202,7 @@ footer a{
 .post-container{
     margin-top: 0.7rem;
     /* background: red; */
-    width: 70%;
+    /* width: 70%; */
     /* border: 0.5rem solid red; */
 }
 
@@ -288,6 +288,9 @@ footer a{
     margin-right: 2rem;
     margin-top: 1rem;
 }
+.home-post-container{
+    width : 70%;
+}
 
 /* scroller bar */
 
@@ -315,10 +318,12 @@ footer a{
     font-family: 'Ubuntu', sans-serif;
     /* background-color: #E63E6D; */
     height: 90vh;
-    width: 30%;
+    width: 25%;
     background:#3c3e42;
     overflow-y: scroll;
-    padding: 0 1rem;
+    /* padding: 0 1rem; */
+    margin-left: 5rem;
+    border-radius: 20px;
 }
 
 .sidebar-header-text{

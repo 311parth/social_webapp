@@ -25,6 +25,7 @@ const login = require("./routes/login");
 const logout = require("./routes/logout");
 const api = require("./routes/api");
 const signup = require("./routes/signup");
+const profile = require("./routes/profile")
 
 app.get("/", (req, res) => {
   res.send("he");
@@ -36,6 +37,8 @@ app.use("/login", login);
 app.use("/logout", logout);
 app.use("/signup", signup);
 app.use("/api", api);
+app.use("/profile", profile);
+
 
 app.listen(process.env.PORT, () => {
   console.log(`Server running on port ${process.env.PORT}`);

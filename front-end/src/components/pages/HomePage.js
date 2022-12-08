@@ -85,9 +85,7 @@ function HomePage() {
                         
                         {/* <Sidebar/> */}
                             <Sidebar/>
-    
                         </div>
-    
                     </UsernameContext.Provider>
                 </>
             )

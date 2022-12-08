@@ -1,5 +1,6 @@
 import React,{useState} from 'react'
 import Footer from '../Footer'
+import {Link} from 'react-router-dom'
 
 
 function LoginPage() {
@@ -61,7 +62,7 @@ function LoginPage() {
                             <input className="loginBtn" type="submit" value="Login" />
                         </li>
                         <li id="login-to-register-li">
-                            Haven't register yet ? &nbsp; <a href="/signup"> Register</a>
+                            Haven't register yet ? &nbsp; <Link to={"/signup"}> Register</Link>
                         </li>
                     </form>
                 </div>

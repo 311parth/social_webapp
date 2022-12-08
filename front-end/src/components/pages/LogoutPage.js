@@ -1,10 +1,12 @@
 import React from 'react'
+import {Link} from 'react-router-dom'
+
 
 function LogoutPage() {
     return (
         <>
             <h3>Logout successfully</h3>
-            <a href="/login">Login?</a>
+            <Link to={"/login"}>Login?</Link>
         </>
     )
 }

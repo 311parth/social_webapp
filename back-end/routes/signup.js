@@ -22,7 +22,7 @@ router.route("/").post(async(req, res) => {
     if (result) {
       res.json({ available: 0 });
     } else {
-      let new_user = new loginModel({
+       let new_user = new loginModel({
         uname: signupUname,
         pw: hashedPw,
         name: signupName,
@@ -31,9 +31,9 @@ router.route("/").post(async(req, res) => {
         username: signupName,
         following : []
       }).save();
-
-
-      res.json({"isok":1});
+      res.json({"isok":1,
+      "uname" : signupUname
+    });
     }
 
 

@@ -5,6 +5,7 @@ import SignupPage from './components/pages/SignupPage';
 import LoginPage from './components/pages/LoginPage';
 import PostPage from './components/pages/PostPage';
 import LogoutPage from './components/pages/LogoutPage';
+import ProfilePage from './components/pages/ProfilePage';
 function App() {
 
   return (
@@ -18,6 +19,8 @@ function App() {
           <Route path="/post" element={<PostPage/>}></Route>
 
           <Route path="/logout" element={<LogoutPage/>}></Route>
+          <Route path="/profile" element={<ProfilePage/>}></Route>
+
 
 
         </Routes>

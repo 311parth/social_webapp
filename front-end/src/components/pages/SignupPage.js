@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Footer from "../Footer";
 import UsernameError from "../UsernameError";
+import { Link } from 'react-router-dom'
 
 function SignupPage() {
   const [errormsg, setErrormsg] = useState(2);
@@ -32,7 +33,21 @@ function SignupPage() {
           console.log(data.available);
         } else {
           console.log(data);
-          window.location.href = "/login";
+          const formData = new FormData();
+          var inputProfileImg = document.getElementById("inputProfileImg");
+          formData.append('inputProfileImg', inputProfileImg.files[0]);
+          //now username is granted and unique so now i can upload profile image
+          fetch(`/profile/profileimg/upload/${data.uname}`, {
+            method: "POST",
+            credentials: "include",
+            body: formData
+          }).then((res) => res.json())
+            .then((data) => {
+
+              console.log(data);
+              if (data.isuploaded === 1)
+                window.location.href = "/login";
+            })
         }
       });
   };
@@ -80,12 +95,33 @@ function SignupPage() {
               />
             </li>
             <li>
+              {/* <label >Profile Picture</label> */}
+              <label className="input-profile-img">
+                <span className="material-symbols-outlined material-icons-md " >
+                  account_circle
+                </span>
+                <span id="input-profile-img-text">
+                  tap to select profile pic
+                </span>
+                <input type="file" name="" id="inputProfileImg" style={
+                  {
+                    display: "none"
+                  }}
+                  onChange={() => {
+                    document.getElementById("input-profile-img-text").textContent = "selected waiting to upload"
+                  }}
+                />
+              </label>
+            </li>
+
+            <li>
               <input className="loginBtn" type="submit" value="Signup" />
             </li>
+
           </form>
 
           <span>
-            Already a user? &nbsp; <a href="/login">Login</a>
+            Already a user? &nbsp; <Link to={"/login"}>Login</Link>
           </span>
         </div>
       </div>

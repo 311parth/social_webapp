@@ -1,5 +1,7 @@
 import React,{useState,useRef,useEffect,useContext} from 'react'
 import {UsernameContext} from "./pages/HomePage"
+import {Link} from 'react-router-dom'
+
 
 function setFill(element){
     if (element.classList.contains("fill-1")) {
@@ -52,8 +54,9 @@ function Post(props) {
                 element.classList.add("fill-1")
                 setFill(element);
             }
+            //fetching profile image 
+            // document.getElementById("post-header-profile-img").src = `http://localhost:8080/profile/profileImg/${username}`
         })
-        
         }
         fetchIt();
     }, [])
@@ -156,7 +159,19 @@ function Post(props) {
         <>
             <div className="post-container">
                 <div className="post-main">
-                    <a className="post-username">{"@"+props.uname}</a>
+                        {/* TODO: add link on click to navigate to profile page for below div */}
+                    <div className="post-header">
+                        <img src={`http://localhost:8080/profile/profileImg/${props.uname}`} alt="" id="post-header-profile-img" style={{
+                            height:"2rem",
+                            width:"2rem",
+                            borderRadius:"50%"
+                        }}/>
+                        <Link className="post-username"  
+                        to="/profile"
+                        > {"@"+props.uname}</Link>
+                        
+                        {/* <a className="post-username">{"@"+props.uname}</a> */}
+                    </div>
                     <h3 className="post-title">{props.title}</h3>
                     <div className="post-desc-container">
                         <p>{props.desc}</p>

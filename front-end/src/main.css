@@ -224,8 +224,9 @@ footer a{
 }
 
 .post-username{
-    font-size: 1rem;
+    font-size: 1.2rem;
     color: #E63E6D;
+    padding-left: 0.3rem;
 }
 
 .post-title{
@@ -238,6 +239,14 @@ footer a{
     margin: 0;
     padding: 0;
     /* background: rebeccapurple; */
+}
+
+.post-header{
+    display: flex;
+    align-items: center;
+    width: fit-content;
+    cursor: pointer;
+    padding-left: 0.5rem;
 }
 
 .interaction-container{

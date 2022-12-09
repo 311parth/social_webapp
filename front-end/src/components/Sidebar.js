@@ -37,7 +37,7 @@ function Sidebar(){
 
                     {Object.entries(usernameArray).map(([key,value])=>
                         // console.log(key,value,typeof(key),typeof(value));
-                        <SidebarFollowCard key={key} imgsrc="/img/avatar1.png" username={value} id={key}/>
+                        <SidebarFollowCard key={key} imgsrc={`http://localhost:8080/profile/profileImg/${value}`} username={value} id={key}/>
                     )
                     
                     }

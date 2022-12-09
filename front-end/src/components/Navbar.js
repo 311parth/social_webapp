@@ -20,18 +20,6 @@ function Navbar(props) {
         .then((data)=>console.log(data))
     }
 
-    function showProfileList() {
-        // var profileList = document.getElementsByClassName("profileList");
-        // console.log(profileList)
-        var profileList = document.getElementById('profileList');
-        if(profileList)
-        {
-             if( profileList.style.display=== 'flex')
-                profileList.style.display= 'none'
-            else
-                profileList.style.display= 'flex'
-        }
-    }
 
     return (
         <>
@@ -48,7 +36,7 @@ function Navbar(props) {
                 </div>
                 <div className="navRight navContainer">
                     <li>
-                        <button onClick={showProfileList}>Profile</button>
+                        <Link to="/profile" state={{username:username}} >Profile</Link>
                     </li>
                     <li><Link to="/logout" onClick={logout}>Logout</Link></li>
                 </div>

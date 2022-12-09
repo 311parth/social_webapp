@@ -1,12 +1,16 @@
 import React,{useRef} from 'react'
+import { useLocation } from "react-router";
 
-function ProfilePage() {
-
+function ProfilePage(props) {
+    let navState = useLocation();
+    // console.log(navState)
+    let username =navState.state.username;
+    console.log("u",username)
     function uploadProfileImg() {
         var inputProfileImg = document.getElementById("input-profile-img"); 
         const formData  = new FormData();
         formData.append('inputProfileImg',inputProfileImg.files[0]);
-        fetch(`/profile/profileimg/upload/y`,{
+        fetch(`/profile/profileimg/upload/${username}`,{
             method:"POST",
             credentials: "include",
             body : formData
@@ -14,15 +18,15 @@ function ProfilePage() {
             .then((data) => {
             console.log(data);
             //must fetch it once to make sure that image exist on that route
-            fetch("http://localhost:8080/profile/profileImg/test",{
+            fetch(`http://localhost:8080/profile/profileImg/${username}`,{
                 method:"GET",
             }).then((res)=> res)
             .then((data)=>{
                 console.log(data);
             })
+            document.getElementById("img-main").src = `http://localhost:8080/profile/profileImg/${username}`
         })
 
-        document.getElementById("img-main").src = "http://localhost:8080/profile/profileImg/test"
 
     }
 

@@ -8,6 +8,7 @@ const authenticateToken = require("../helper/authenticateToken");
 const { postModel } = require("../model/postModel");
 const { interactionModel } = require("../model/interactionModel");
 const { followersModel } = require("../model/followersModel");
+const { route } = require("./home");
 
 var seq = 0;
 //this will only run when server is restarted , to get last seq number
@@ -18,7 +19,6 @@ postModel
     }
   })
   .sort({ seq: -1 });
-
 // console.log(seq);
 router.route("/").get((req, res) => {
   res.send("jjj");
@@ -52,6 +52,7 @@ router
     res.json({ posted: 1 });
   })
   .get(authenticateToken, async (req, res) => {
+    
     const username = getLoggedUser(req.cookies.secret, req.cookies.uname);
     const loggedUserData = await getLoggedUserData(username);
     // console.log(loggedUserData)
@@ -202,28 +203,59 @@ router.route("/random/followcard/").post(async (req, res) => {
   const loggedUserData = await getLoggedUserData(username);
 
   // console.log(loggedUserData);
-  loggedUserData[0].following.push(username); //temporary addding username to remove it from list of all unfollowing user
-  await followersModel
-    .find(
-      {
-        username: { $nin: loggedUserData[0].following },
-      },
-      { username: 1, _id: 0 }
-    )
-    .clone()
-    .limit(50)
-    .exec((err, result) => {
-      var array = [];
-      if (err) throw err;
-      else {
-        for (const i in result) {
-          array.push(result[i].username);
+  try {
+    loggedUserData[0].following.push(username); //temporary addding username to remove it from list of all unfollowing user
+    await followersModel
+      .find(
+        {
+          username: { $nin: loggedUserData[0].following },
+        },
+        { username: 1, _id: 0 }
+      )
+      .clone()
+      .limit(50)
+      .exec((err, result) => {
+        var array = [];
+        if (err) throw err;
+        else {
+          for (const i in result) {
+            array.push(result[i].username);
+          }
+          res.json({ isok: 1, usernameArray: array });
         }
-        res.json({ isok: 1, usernameArray: array });
-      }
-    });
-
+      });
+  } catch (error) {
+    console.log(error);
+  }
   // console.log(1,loggedUserData[0].following,typeof(loggedUserData[0].following))
 });
+
+router.route("/profile/post/:username")
+  .get(authenticateToken,async (req,res)=>{
+    await postModel
+      .find({ uname: req.params.username }, { _id: 0, time: 0, __v: 0 })
+      .sort({ seq: -1 })
+      .limit(20)
+      .clone()
+      .exec(async (err, result) => {
+        if (err) {
+          res.sendStatus(500);
+          return;
+        }
+        if (result) {
+          await res.send(result);
+        } else {
+          return res.status("404").json({ err });
+        }
+      });
+    // res.json({"isok":1})
+  })
+
+router.route("/profile/:username/following")
+.get(async(req,res)=>{
+    getLoggedUserData(req.params.username).then((result)=>{
+      res.json(result[0].following)
+    })
+})
 
 module.exports = router;

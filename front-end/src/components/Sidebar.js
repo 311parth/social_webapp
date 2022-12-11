@@ -24,11 +24,13 @@ function Sidebar(){
             setUsernameArray(data.usernameArray)
         })
     }, [])
+
+    
     
     // console.log(1,usernameArray,typeof(usernameArray))
 
     if(usernameArray){
-        return (    
+        return (
             <>
                 <div className="sidebar-main">
                     <span className="sidebar-header-text">
@@ -39,9 +41,7 @@ function Sidebar(){
                         // console.log(key,value,typeof(key),typeof(value));
                         <SidebarFollowCard key={key} imgsrc={`http://localhost:8080/profile/profileImg/${value}`} username={value} id={key}/>
                     )
-                    
                     }
-
                     {/* <SidebarFollowCard imgsrc="/img/avatar1.png"  username="Username" id="1"/> */}
                     {/* <SidebarFollowCard imgsrc="/img/avatar1.png" username="Username2" id="2"/> */}
                 </div>

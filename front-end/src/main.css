@@ -387,6 +387,40 @@ footer a{
     color: #E63E6D;
 }
 
+.profile-header-container{
+    width: 60vw;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+    color:#1FAB89;
+    font-family: 'Ubuntu', sans-serif;
+}
+
+.profile-header-container div{
+    display: flex;
+    justify-content:right;
+}
+.submit-btn{
+    border-radius: 10px;
+    background-color: #1FAB89;
+    color: #252A34;
+    margin-left: 1rem;
+}
+.submit-btn:hover{
+    background-color: #252A34;
+    color: #1FAB89;
+}
 
 
+.change-img-container{
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content:flex-end;
+    width: 30vw;
+    margin-right: 0.8rem;
+}
+.change-img-container:hover{
+    color: #E63E6D;
+}
 

@@ -10,7 +10,7 @@ router.route("/").post(async (req, res) => {
   var loginUname = req.body.loginUname;
   var loginPw = req.body.loginPassword;
 
-  // console.log(loginUname, loginPw);
+  console.log(loginUname, loginPw);
   loginModel.findOne({ uname: loginUname }, async (err, result) => {
     if (err) throw err;
     if (result && (await bcrypt.compare(loginPw, result.pw))) {
@@ -21,10 +21,10 @@ router.route("/").post(async (req, res) => {
       // console.log(verify_jwt.uname)
       res
         .cookie("secret", token, {
-          path: "localhost:3000/",
+          // path: "localhost:3000/",
         })
         .cookie("uname", loginUname, {
-          path: "localhost:3000/",
+          // path: "localhost:3000/",
         })
         .json({ logged: 1 });
       // console.log(token);

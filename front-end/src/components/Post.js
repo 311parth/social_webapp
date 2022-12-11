@@ -2,7 +2,7 @@ import React,{useState,useRef,useEffect,useContext} from 'react'
 import {UsernameContext} from "./pages/HomePage"
 import {Link} from 'react-router-dom'
 
-
+var tempIsFetch = false;
 function setFill(element){
     if (element.classList.contains("fill-1")) {
         element.style = " font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 48"
@@ -115,7 +115,7 @@ function Post(props) {
         body.fill===0? setInteraction({like:interaction.like,dislike:interaction.dislike+1}) :  setInteraction({like:interaction.like,dislike:interaction.dislike-1})
     }
 
-    const isfetch = useRef(false);
+    const isfetch = useRef(tempIsFetch);
     const [fetchNow,setFetchNow] = useState(0);
     useEffect(() => {
         if (!isfetch.current) {
@@ -141,6 +141,7 @@ function Post(props) {
         }
 
         isfetch.current = true;
+        tempIsFetch = true;
     }, [fetchNow]);
 
 
@@ -150,7 +151,7 @@ function Post(props) {
             setFetchNow(1);
         else
             setFetchNow(0);
-    }, 5000);
+    }, 15000);
     
 
     const num=0;
@@ -161,7 +162,7 @@ function Post(props) {
                 <div className="post-main">
                         {/* TODO: add link on click to navigate to profile page for below div */}
                     <div className="post-header">
-                        <img src={`http://localhost:8080/profile/profileImg/${props.uname}`} alt="" id="post-header-profile-img" style={{
+                        <img src={`http://localhost:8080/profile/profileImg/${props.uname}`} alt="" id="post-header-profile-img" loading="lazy" style={{
                             height:"2rem",
                             width:"2rem",
                             borderRadius:"50%"

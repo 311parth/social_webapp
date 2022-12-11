@@ -5,6 +5,7 @@ import SignupPage from './components/pages/SignupPage';
 import LoginPage from './components/pages/LoginPage';
 import PostPage from './components/pages/PostPage';
 import LogoutPage from './components/pages/LogoutPage';
+import SelfProfilePage from './components/pages/SelfProfilePage';
 import ProfilePage from './components/pages/ProfilePage';
 function App() {
 
@@ -19,9 +20,8 @@ function App() {
           <Route path="/post" element={<PostPage/>}></Route>
 
           <Route path="/logout" element={<LogoutPage/>}></Route>
-          <Route path="/profile" element={<ProfilePage/>}></Route>
-
-
+          <Route path="/profile" element={<SelfProfilePage/>}></Route>
+          <Route path="/user/:username" element={<ProfilePage/>}></Route>
 
         </Routes>
     </BrowserRouter>

@@ -32,7 +32,7 @@ function SidebarFollowCard(props) {
     return (
         <div className="follow-card">
             <div className="sidebar-img">
-                <img src={props.imgsrc} alt="" />
+                <img src={props.imgsrc} loading="lazy" alt=""/>
             </div>
             <span>@{props.username}</span>
             <button className="follow-btn" id={"follow-button-"+props.id} type="button" onClick={follow} >Follow</button>

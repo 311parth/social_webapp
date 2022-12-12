@@ -29,7 +29,8 @@ router.route("/").post(async(req, res) => {
       }).save();
       let new_user_followers = new followersModel({
         username: signupName,
-        following : []
+        following : [],
+        folloers : []
       }).save();
       res.json({"isok":1,
       "uname" : signupUname

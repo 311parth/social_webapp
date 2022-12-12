@@ -68,6 +68,7 @@ function HomePage() {
     }
     if (window.sessionStorage.getItem("islogged") === "1") {
         if(username){//if any only username is not undefined then load home page
+            // console.log(post)
             return (
                 <>
                     <UsernameContext.Provider value={username}>
@@ -76,10 +77,10 @@ function HomePage() {
     
                         <div className="home-page-container">
                             <div className="home-post-container">
-    
-                                {post.map((post, i) => {
+
+                                { post ?  post.map((post, i) => {
                                     return <Post id={i.toString()} seq={post.seq} uname={post.uname} title={post.title} desc={post.desc} key={i} />
-                                    })
+                                    }) : ""
                                 }
                             </div>  
                         

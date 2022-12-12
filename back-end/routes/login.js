@@ -10,7 +10,7 @@ router.route("/").post(async (req, res) => {
   var loginUname = req.body.loginUname;
   var loginPw = req.body.loginPassword;
 
-  console.log(loginUname, loginPw);
+  // console.log(loginUname, loginPw);
   loginModel.findOne({ uname: loginUname }, async (err, result) => {
     if (err) throw err;
     if (result && (await bcrypt.compare(loginPw, result.pw))) {

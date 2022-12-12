@@ -21,7 +21,7 @@ function App() {
 
           <Route path="/logout" element={<LogoutPage/>}></Route>
           <Route path="/profile" element={<SelfProfilePage/>}></Route>
-          <Route path="/user/:username" element={<ProfilePage/>}></Route>
+          <Route path="/user" element={<ProfilePage/>}></Route>
 
         </Routes>
     </BrowserRouter>

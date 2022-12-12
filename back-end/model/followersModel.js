@@ -6,7 +6,8 @@ const followersSchema = new mongoose.Schema({
     // liked_uname: [String],
     // disliked_uname: [String],
     username : String,
-    following : [String]
+    following : [String],
+    followers:[String]
 })
 
 var followersModel = mongoose.model("followers",followersSchema)

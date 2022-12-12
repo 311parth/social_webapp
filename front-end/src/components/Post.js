@@ -1,6 +1,7 @@
 import React,{useState,useRef,useEffect,useContext} from 'react'
 import {UsernameContext} from "./pages/HomePage"
 import {Link} from 'react-router-dom'
+import FetchError from './FetchError';
 
 var tempIsFetch = false;
 function setFill(element){
@@ -24,13 +25,33 @@ function Post(props) {
     });
 
 
-
+    const usernameDefault= useContext(UsernameContext);
 
     var interactionData = {};
-    const username = useContext(UsernameContext);
-    
+    let username = useRef(); 
+    // console.log(window.location.pathname)
     useEffect(() => {
+        if(window.location.pathname==="/user"){
+            fetch("/api/get_username", {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: "include",
+            }).then((response) => response.json())
+                .then((data) => {
+                    // username = data.username;
+                    username.current= data.username;
+                    // console.log(username.current)
+                })
+        }else{
+            // username = usernameDefault;
+            username.current = usernameDefault;
+
+        }
         function fetchIt() {
+            // console.log("fetch",username.current)
+
         fetch("/api/interaction/"+props.seq, {
             method: 'GET',
             headers: {
@@ -43,13 +64,13 @@ function Post(props) {
             interactionData = data;
             //loading post interaction either fill or unfill
             var element = document.getElementById("material-symbols-outlined-like-"+props.id)
-            if(interactionData.liked_uname.includes(username)){
+            if(interactionData.liked_uname.includes(username.current)){
                 // console.log(interactionData.liked_uname)
                 element.classList.add("fill-1")
                 setFill(element);
             }
             var element = document.getElementById("material-symbols-outlined-dislike-"+props.id)
-            if(interactionData.disliked_uname.includes(username)){
+            if(interactionData.disliked_uname.includes(username.current)){
                 // console.log(interactionData.disliked_uname)
                 element.classList.add("fill-1")
                 setFill(element);
@@ -58,7 +79,10 @@ function Post(props) {
             // document.getElementById("post-header-profile-img").src = `http://localhost:8080/profile/profileImg/${username}`
         })
         }
-        fetchIt();
+        // fetchIt();
+        if(username.current!==""){
+            fetchIt();
+        }
     }, [])
 
 
@@ -69,6 +93,7 @@ function Post(props) {
     // TODO: only increment like count if like is succesfully
     
     const submit_like=()=>{
+        // console.log("func",username.current)
         var element = document.getElementById("material-symbols-outlined-like-"+props.id)
         element.classList.toggle("fill-1")
         // console.log(props.seq)
@@ -93,6 +118,8 @@ function Post(props) {
 
     }
     const submit_dislike=()=>{
+        // console.log("func",username.current)
+
 
         var element = document.getElementById("material-symbols-outlined-dislike-"+props.id)
         element.classList.toggle("fill-1")
@@ -118,6 +145,7 @@ function Post(props) {
     const isfetch = useRef(tempIsFetch);
     const [fetchNow,setFetchNow] = useState(0);
     useEffect(() => {
+        // console.log("refetched")
         if (!isfetch.current) {
         // your API call func
             // console.log("u")
@@ -132,11 +160,34 @@ function Post(props) {
             ).then((response) => response.json())
             .then(async (data) => {
                 interactionData = data;
-                // console.log(interactionData)
+                // console.log(interactionData.liked_uname.includes(username.current),interactionData)
                 setInteraction({like : interactionData.like,dislike:interactionData.dislike})
+                var liked_uname = interactionData.liked_uname;
+                var disliked_uname = interactionData.disliked_uname;
 
-                // document.getElementById("like-count-"+props.id).textContent = data.like;
-                // document.getElementById("dislike-count-"+props.id).textContent = data.dislike;
+                const like_element = document.getElementById("material-symbols-outlined-like-"+props.id)
+                const dislike_element = document.getElementById("material-symbols-outlined-dislike-"+props.id)
+
+                //if two page is concurrently open then updating interactions:
+                if(liked_uname.includes(username.current)){
+                        like_element.classList.add("fill-1")
+                        like_element.style = " font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 48"
+                }else{
+                    if(like_element.classList.contains("fill-1")){
+                        like_element.classList.remove("fill-1");
+                        like_element.style = " font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 48"
+
+                    }
+                }
+                if (disliked_uname.includes(username.current)) {
+                    dislike_element.classList.add("fill-1")
+                    dislike_element.style = " font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 48"
+                } else {
+                    if (dislike_element.classList.contains("fill-1")) {
+                        dislike_element.classList.remove("fill-1");
+                        dislike_element.style = " font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 48"
+                    }
+                }
             })
         }
 
@@ -151,61 +202,56 @@ function Post(props) {
             setFetchNow(1);
         else
             setFetchNow(0);
-    }, 15000);
-    
-
+    }, 5000);
     const num=0;
-
-    return (
-        <>
-            <div className="post-container">
-                <div className="post-main">
-                        {/* TODO: add link on click to navigate to profile page for below div */}
-                    <div className="post-header">
-                        <img src={`http://localhost:8080/profile/profileImg/${props.uname}`} alt="" id="post-header-profile-img" loading="lazy" style={{
-                            height:"2rem",
-                            width:"2rem",
-                            borderRadius:"50%"
-                        }}/>
-                        <Link className="post-username"  
-                        to="/profile"
-                        > {"@"+props.uname}</Link>
-                        
-                        {/* <a className="post-username">{"@"+props.uname}</a> */}
+        return (
+            <>
+                <div className="post-container">
+                    <div className="post-main">
+                            {/* TODO: add link on click to navigate to profile page for below div */}
+                        <div className="post-header">
+                            <img src={`http://localhost:8080/profile/profileImg/${props.uname}`} alt="" id="post-header-profile-img" loading="lazy" style={{
+                                height:"2rem",
+                                width:"2rem",
+                                borderRadius:"50%"
+                            }}/>
+                            <Link className="post-username"  
+                            to={`/user?username=${props.uname}`}
+                            > {"@"+props.uname}</Link>
+                        </div>
+                        <h3 className="post-title">{props.title}</h3>
+                        <div className="post-desc-container">
+                            <p>{props.desc}</p>
+                        </div>
+    
+                        <div className="interaction-container">
+                            <button className="interaction-btn " onClick={submit_like}>
+                                <span className="material-symbols-outlined" id= {"material-symbols-outlined-like-"+props.id}  >
+                                    thumb_up_off
+                                </span>
+                                <span className="post-like-count post-interaction-count" id={"like-count-"+props.id}>
+                                    {interaction.like}
+                                </span>
+                            </button>
+    
+                            <button className="interaction-btn"  onClick={submit_dislike}>
+    
+                                <span className="material-symbols-outlined " id={"material-symbols-outlined-dislike-"+props.id}>
+                                    thumb_down_off
+                                </span>
+                                <span className="post-dislike-count post-interaction-count" id={"dislike-count-"+props.id} >
+                                    {interaction.dislike}
+                                </span>
+                            </button>
+    
+    
+                        </div>
+    
+    
                     </div>
-                    <h3 className="post-title">{props.title}</h3>
-                    <div className="post-desc-container">
-                        <p>{props.desc}</p>
-                    </div>
-
-                    <div className="interaction-container">
-                        <button className="interaction-btn " onClick={submit_like}>
-                            <span className="material-symbols-outlined" id= {"material-symbols-outlined-like-"+props.id}  >
-                                thumb_up_off
-                            </span>
-                            <span className="post-like-count post-interaction-count" id={"like-count-"+props.id}>
-                                {interaction.like}
-                            </span>
-                        </button>
-
-                        <button className="interaction-btn"  onClick={submit_dislike}>
-
-                            <span className="material-symbols-outlined " id={"material-symbols-outlined-dislike-"+props.id}>
-                                thumb_down_off
-                            </span>
-                            <span className="post-dislike-count post-interaction-count" id={"dislike-count-"+props.id} >
-                                {interaction.dislike}
-                            </span>
-                        </button>
-
-
-                    </div>
-
-
                 </div>
-            </div>
-        </>
-    )
+            </>
+        )
 }
 
 export default Post

@@ -36,14 +36,16 @@ function Sidebar(){
                     <span className="sidebar-header-text">
                         Account you may like to follow
                     </span>
+                    
+                    <div className="sidebar-main-card-container">
+                        {Object.entries(usernameArray).map(([key,value])=>
+                            // console.log(key,value,typeof(key),typeof(value));
+                            <SidebarFollowCard key={key} imgsrc={`http://localhost:8080/profile/profileImg/${value}`} username={value} id={key}/>
+                            
+                        )
+                        }
+                    </div>
 
-                    {Object.entries(usernameArray).map(([key,value])=>
-                        // console.log(key,value,typeof(key),typeof(value));
-                        <SidebarFollowCard key={key} imgsrc={`http://localhost:8080/profile/profileImg/${value}`} username={value} id={key}/>
-                    )
-                    }
-                    {/* <SidebarFollowCard imgsrc="/img/avatar1.png"  username="Username" id="1"/> */}
-                    {/* <SidebarFollowCard imgsrc="/img/avatar1.png" username="Username2" id="2"/> */}
                 </div>
             </>
         )

@@ -75,8 +75,10 @@ function SelfProfilePage(props) {
             <>
                 <Navbar />
                 <div className="profile-header-container">
-                    
-                    <h3>@{username}</h3>
+                    <div>
+                        <h3 className="profile-header-username">@{username}</h3>
+                        <img  src={`http://localhost:8080/profile/profileImg/${username}`} alt="" id="img-main" loading="lazy" width="50" height="50" style={{borderRadius: "50%",}}/>
+                    </div>
                     <div>
                         <form >
                             <label className="change-img-container">
@@ -96,7 +98,6 @@ function SelfProfilePage(props) {
                                 <input type="button" className="submit-btn" value="save" onClick={uploadProfileImg} />
                             </label>
                         </form>
-                        <img  src={`http://localhost:8080/profile/profileImg/${username}`} alt="" id="img-main" loading="lazy" width="50" height="50" style={{borderRadius: "50%",}}/>
                     </div>
                 </div>
     
@@ -112,15 +113,18 @@ function SelfProfilePage(props) {
     
                         <div className="sidebar-main" style={{
                             height:"fit-content"
-                        }}>
+                            }}>
                             <span className="sidebar-header-text">
                                 Account you may like to follow
                             </span>
+                            <div className="sidebar-main-card-container">
+
                                 {
                                     usernameArray.map((value,i)=>{
                                         return <FollowingList key={i.toString()}  username={value} imgsrc={`http://localhost:8080/profile/profileImg/${value}`} />
                                     })
                                 }
+                            </div>
                         </div>
 
                     </div>

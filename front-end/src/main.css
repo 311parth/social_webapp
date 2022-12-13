@@ -1,17 +1,23 @@
 @import url('https://fonts.googleapis.com/css2?family=Ubuntu&display=swap');
 /* font-family: 'Ubuntu', sans-serif; */
 
-
+html{
+    scrollbar-width: none;
+}
 body{
     /* color: white; */
     overflow-x: hidden;
     margin: 0;
     padding: 0;
+    overflow-y: scroll;
+}
+
+body::-webkit-scrollbar{
+    display: none;
 }
 a{
     color: #1FAB89;
 }
-
 
 .loginFormContainer{
     margin: 0 2rem;
@@ -188,6 +194,7 @@ footer a{
 
 .post-input-element{
     width: 30rem;
+    max-width: 70%;
     margin-top: 1rem;
 }
 
@@ -304,9 +311,11 @@ footer a{
     margin-left: 1rem;
     margin-right: 2rem;
     margin-top: 1rem;
+    /* background-color: #E63E6D; */
 }
 .home-post-container{
-    width : 70%;
+    width : 100vw;
+
 }
 
 /* scroller bar */
@@ -318,12 +327,12 @@ footer a{
 
 /* Track */
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: #252A34;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background:#1FAB89;
+  background:#E63E6D;
 }
 
 /* Handle on hover */
@@ -339,6 +348,7 @@ footer a{
     background:#3c3e42;
     overflow-y: scroll;
     /* padding: 0 1rem; */
+    padding: 0;
     margin-left: 5rem;
     border-radius: 20px;
 }
@@ -350,16 +360,26 @@ footer a{
     padding: 0.5rem;
 }
 
+.sidebar-main-card-container{
+    display: flex;
+    flex-direction: column;
+    /* justify-content: center; */
+    align-items: center;
+    overflow-x: hidden;
+}
 .follow-card{
     background-color:#252A34;
     color: white;
     margin-bottom: 1rem;
-    height: 3rem;
+    height: fit-content;
     display: flex;
     justify-content:space-evenly;
     border: 2px solid #1FAB89;
     align-items: center;
     border-radius: 5%;
+    width: 10rem;
+    display: flex;
+    flex-direction: column;
 }
 
 .sidebar-img{
@@ -400,6 +420,9 @@ footer a{
     display: flex;
     justify-content:right;
 }
+.profile-header-username{
+    margin-right: 0.3rem;
+}
 .submit-btn{
     border-radius: 10px;
     background-color: #1FAB89;
@@ -424,3 +447,38 @@ footer a{
     color: #E63E6D;
 }
 
+
+@media only screen and (max-width: 800px) {
+    .home-page-container{
+        width: 100vw;
+        display: flex;
+        flex-direction: column;
+        margin-left: auto;
+    margin-right: auto;
+    }
+    .home-post-container{
+        width: 95vw;
+        margin: auto;
+    }
+    .sidebar-main-card-container{
+        display: flex;
+        flex-direction: row;
+    }
+    .follow-card{
+        margin-left: 1rem;
+        padding: 0.7rem;
+    }
+    .sidebar-main{
+        height: fit-content;
+        width: 95vw;
+        margin: auto;
+        overflow-y: auto;
+        overflow-x: scroll;
+    }
+    .profile-header-container{
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        align-items: center;
+    }
+}

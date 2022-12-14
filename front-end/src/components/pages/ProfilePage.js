@@ -75,11 +75,13 @@ function ProfilePage() {
                             <span className="sidebar-header-text">
                                 Followers
                             </span>
+                            <div className="sidebar-main-card-container">
                                 {
                                     usernameArray.map((value,i)=>{
                                         return <FollowingList key={i.toString()}  username={value} imgsrc={`http://localhost:8080/profile/profileImg/${value}`} />
                                     })
                                 }
+                            </div>
                         </div>
 
                     </div>

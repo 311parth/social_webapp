@@ -4,7 +4,12 @@ const postSchema = new mongoose.Schema({
     title:String,
     desc:String,
     time : Date,
-    seq : Number
+    seq : Number,
+    img: {
+        data: Buffer,
+        contentType: String,
+        name:String
+    }
 })
 
 var postModel = mongoose.model("posts",postSchema)

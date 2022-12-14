@@ -51,6 +51,9 @@ input , textarea{
     outline: none;
     border-radius: 3%;
 }
+textarea{
+    min-height: 3rem;
+}
 input:hover , textarea:hover{
     border: 2px solid #1FAB89;
 }
@@ -94,6 +97,8 @@ input:hover , textarea:hover{
 .input-profile-img{
     display: flex;
     align-items: center;
+    font-family: 'Ubuntu', sans-serif;
+    color:#E63E6D;
 }
 
 footer{
@@ -187,8 +192,9 @@ footer a{
     display: flex;
     flex-direction: column;
     justify-content: center;
-    height: 50vh;
+    height: 70vh;
     align-items:center;
+
 }
 
 
@@ -228,6 +234,7 @@ footer a{
     border-radius: 10px 25px;
     font-family: 'Ubuntu', sans-serif;
     font-size: 0.9rem;
+    /* background-color: #E63E6D; */
 }
 
 .post-username{
@@ -253,9 +260,15 @@ footer a{
     align-items: center;
     width: fit-content;
     cursor: pointer;
-    padding-left: 0.5rem;
+    padding: 0.5rem;
+    margin-bottom: 0.8rem;
 }
 
+.post-text-container{
+    /* background-color:bisque; */
+    width: 75%;
+    margin: auto;
+}
 .interaction-container{
     display: flex;
 }   
@@ -314,8 +327,10 @@ footer a{
     /* background-color: #E63E6D; */
 }
 .home-post-container{
-    width : 100vw;
-
+    width : 60vw;
+    /* background:#252A34; */
+    margin: auto;
+    /* justify-content: center; */
 }
 
 /* scroller bar */
@@ -448,6 +463,19 @@ footer a{
 }
 
 
+.post-img-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.post-img-container img{
+    width: 520;
+    height: 520px;
+    object-fit: cover;
+}
+
+
+
 @media only screen and (max-width: 800px) {
     .home-page-container{
         width: 100vw;
@@ -474,6 +502,7 @@ footer a{
         margin: auto;
         overflow-y: auto;
         overflow-x: scroll;
+        margin-top: 1rem;
     }
     .profile-header-container{
         display: flex;
@@ -482,3 +511,4 @@ footer a{
         align-items: center;
     }
 }
+

@@ -36,6 +36,7 @@ function SignupPage() {
           const formData = new FormData();
           var inputProfileImg = document.getElementById("inputProfileImg");
           formData.append('inputProfileImg', inputProfileImg.files[0]);
+          console.log("formData",formData)
           //now username is granted and unique so now i can upload profile image
           fetch(`/profile/profileimg/upload/${data.uname}`, {
             method: "POST",
@@ -43,7 +44,6 @@ function SignupPage() {
             body: formData
           }).then((res) => res.json())
             .then((data) => {
-
               console.log(data);
               if (data.isuploaded === 1)
                 window.location.href = "/login";

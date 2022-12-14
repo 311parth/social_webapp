@@ -9,6 +9,7 @@ const { postModel } = require("../model/postModel");
 const { interactionModel } = require("../model/interactionModel");
 const { followersModel } = require("../model/followersModel");
 const { route } = require("./home");
+const fs = require("fs");
 
 var seq = 0;
 //this will only run when server is restarted , to get last seq number
@@ -28,22 +29,106 @@ router.route("/get_username").get(authenticateToken,(req, res) => {
   // console.log(username)
   res.json({ username: `${username}` });
 });
-router
-  .route("/post")
-  .post(authenticateToken, async (req, res) => {
+
+
+const multer = require("multer");
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    //cb stands for call back that auto call by multer
+    cb(null, "./uploads/");
+  },
+  filename: function (req, file, cb) {
+    cb(null,file.originalname);
+  },
+});
+
+const fileFilter = (req, file, cb) => {
+  // console.log("here",file.originalname)
+
+  // reject a file
+  if (file.mimetype === "image/jpeg" || file.mimetype === "image/png") {
+    cb(null, true);
+    // console.log(0.5,Date.now())
+  } else {
+    cb(null, false);
+  }
+};
+const upload = multer({
+  storage: storage,
+  fileFilter: fileFilter,
+});
+
+async function savePostImgToDB(req, res, next) {
     var uname = req.body.postUname;
     var title = req.body.postTitle;
     var desc = req.body.postDesc;
     var time = req.body.postTime;
 
-    seq++;
-    const new_post = await new postModel({
+  seq++;
+  if (req.files) {
+    // console.log("req.file if")
+    //req.files name is complicated as below
+    const fileOriginalName = req.files.inputPostImg[0].originalname
+
+    // console.log(req.files);
+
+      const saveImage = await postModel({
+        uname: uname,
+        title: title,
+        desc: desc,
+        time: time,
+        seq: seq,
+        img: {
+          data: fs.readFileSync("uploads/" + fileOriginalName),
+          contentType: "image/png",
+          name:fileOriginalName
+        },
+      });
+      saveImage
+        .save()
+        .then((res) => {
+          // console.log("image is saved");
+        })
+        .catch((err) => {
+          console.log(err, "error has occur");
+        });
+      console.log(req.body);
+      fs.rm("uploads/" +fileOriginalName, () => {
+        // console.log(3, Date.now());
+        // console.log("stored at db removed at server");
+      });
+  }
+  else{
+    // console.log("req.file else")
+    const saveImage = await postModel({
       uname: uname,
       title: title,
       desc: desc,
       time: time,
       seq: seq,
-    }).save();
+    })
+    saveImage.save().then((saved)=>{
+      // console.log("post image saved");
+    }).catch((err)=>{
+      console.log(err);
+    })
+  }
+  next();
+}
+
+router
+  .route("/post")
+  .post(authenticateToken,upload.fields([
+    { name: "otherFormData", maxCount: 1 },
+    { name: "inputPostImg", maxCount: 1 }
+  ]),savePostImgToDB,async (req, res) => {
+
+    //to get the file name => by doing console.log(req.files) its is nested in objects like below
+    // console.log("file",req.files.inputPostImg[0].originalname);
+
+
+    //saving  blank interaction for above post
     const new_interaction = await new interactionModel({
       seq: seq,
       dislike: 0,
@@ -51,8 +136,8 @@ router
     }).save();
     res.json({ posted: 1 });
   })
+
   .get(authenticateToken, async (req, res) => {
-    
     const username = getLoggedUser(req.cookies.secret, req.cookies.uname);
     const loggedUserData = await getLoggedUserData(username);
     // console.log(loggedUserData)
@@ -225,39 +310,41 @@ router.route("/follow").post(async (req, res) => {
 });
 router.route("/random/followcard/").post(async (req, res) => {
   const username = req.body.username;
-
-  const loggedUserData = await getLoggedUserData(username);
+  // const loggedUserData = await getLoggedUserData(username);
+  getLoggedUserData(username).then(async(loggedUserDataResult)=>{
+  const loggedUserData = loggedUserDataResult;
+    try {
+      if(loggedUserData[0]){
+        loggedUserData[0].following.push(username); //temporary addding username to remove it from list of all unfollowing user
+        await followersModel
+          .find(
+            {
+              username: { $nin: loggedUserData[0].following },
+            },
+            { username: 1, _id: 0 }
+          )
+          .clone()
+          .limit(50)
+          .exec((err, result) => {
+            var array = [];
+            if (err) throw err;
+            else {
+              for (const i in result) {
+                array.push(result[i].username);
+              }
+              res.json({ isok: 1, usernameArray: array });
+            }
+          });
+      }
+      else{
+        res.json({isok:1})
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  })
 
   // console.log(loggedUserData);
-  try {
-    if(loggedUserData[0]){
-      loggedUserData[0].following.push(username); //temporary addding username to remove it from list of all unfollowing user
-      await followersModel
-        .find(
-          {
-            username: { $nin: loggedUserData[0].following },
-          },
-          { username: 1, _id: 0 }
-        )
-        .clone()
-        .limit(50)
-        .exec((err, result) => {
-          var array = [];
-          if (err) throw err;
-          else {
-            for (const i in result) {
-              array.push(result[i].username);
-            }
-            res.json({ isok: 1, usernameArray: array });
-          }
-        });
-    }
-    else{
-      res.json({isok:1,usernameArray:[]})
-    }
-  } catch (error) {
-    console.log(error);
-  }
   // console.log(1,loggedUserData[0].following,typeof(loggedUserData[0].following))
 });
 
@@ -285,7 +372,9 @@ router.route("/profile/post/:username")
 router.route("/profile/:username/following")
 .get(authenticateToken,async(req,res)=>{
     getLoggedUserData(req.params.username).then((result)=>{
+      if(result[0]){
       res.json(result[0].following)
+      }
     })
 })
 
@@ -301,6 +390,7 @@ router.route("/user").get(async(req,res)=>{
     }
   })
 })
+
 
 
 module.exports = router;

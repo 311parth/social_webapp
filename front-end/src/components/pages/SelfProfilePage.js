@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useRef} from "react";
 import { useLocation } from "react-router";
 import Navbar from "../Navbar";
 import Post from "../Post";
@@ -7,40 +7,62 @@ import FetchError from "../FetchError";
 function SelfProfilePage(props) {
     let navState = useLocation();
     // console.log(navState)
-    let username = navState.state.username;
+    let username = useRef();
+    
     // console.log("u", username);
    
     const [post, setPost] = useState([]);
     const [usernameArray,setUsernameArray] = useState([]);
 
     useEffect(() => {
-        //fetching posts
-        fetch(`/api/profile/post/${username}`, {
-            method: "GET",
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            credentials: "include",
-        }).then((res) => {
-            if (res.ok) return res.json();
-            else res.json({ "isok": 0 })
+        const usernamePromise = new Promise((resolve,reject)=>{
+            if(navState.state){
+                username.current = navState.state.username;
+                resolve();
+            }else{
+                fetch("/api/get_username", {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: "include",
+                }).then((response) => response.json())
+                    .then((data) => {
+                        // console.log(data)
+                        username.current= data.username;
+                        resolve();
+                })
+            }
         })
-            .then(async (data) => {
-                // console.log(data);
-                await setPost(data)
+        usernamePromise.then(()=>{
+            //fetching posts
+            fetch(`/api/profile/post/${username.current}`, {
+                method: "GET",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: "include",
+            }).then((res) => {
+                if (res.ok) return res.json();
+                else res.json({ "isok": 0 })
             })
-
-        //fetching following 
-        fetch(`/api/profile/${username}/following`,{
-            method:"GET",
-            headers:{
-                'Content-Type' : 'application/json'
-            },
-            credentials: 'include',
-        })
-        .then((res)=>{return res.json()})
-        .then((data)=>{
-            setUsernameArray(data)
+                .then(async (data) => {
+                    // console.log(data);
+                    await setPost(data)
+                })
+    
+            //fetching following 
+            fetch(`/api/profile/${username.current}/following`,{
+                method:"GET",
+                headers:{
+                    'Content-Type' : 'application/json'
+                },
+                credentials: 'include',
+            })
+            .then((res)=>{return res.json()})
+            .then((data)=>{
+                setUsernameArray(data)
+            })
         })
     }, [])
 
@@ -48,7 +70,7 @@ function SelfProfilePage(props) {
         var inputProfileImg = document.getElementById("input-profile-img");
         const formData = new FormData();
         formData.append("inputProfileImg", inputProfileImg.files[0]);
-        fetch(`/profile/profileimg/upload/${username}`, {
+        fetch(`/profile/profileimg/upload/${username.current}`, {
             method: "POST",
             credentials: "include",
             body: formData,
@@ -57,7 +79,7 @@ function SelfProfilePage(props) {
             .then((data) => {
                 // console.log(data);
                 //must fetch it once to make sure that image exist on that route
-                fetch(`http://localhost:8080/profile/profileImg/${username}`, {
+                fetch(`http://localhost:8080/profile/profileImg/${username.current}`, {
                     method: "GET",
                 })
                     .then((res) => res)
@@ -66,18 +88,17 @@ function SelfProfilePage(props) {
                     });
                 document.getElementById(
                     "img-main"
-                ).src = `http://localhost:8080/profile/profileImg/${username}`;
+                ).src = `http://localhost:8080/profile/profileImg/${username.current}`;
             });
     }
-
     if(usernameArray){
         return (
             <>
                 <Navbar />
                 <div className="profile-header-container">
                     <div>
-                        <h3 className="profile-header-username">@{username}</h3>
-                        <img  src={`http://localhost:8080/profile/profileImg/${username}`} alt="" id="img-main" loading="lazy" width="50" height="50" style={{borderRadius: "50%",}}/>
+                        <h3 className="profile-header-username">@{username.current}</h3>
+                        <img  src={`http://localhost:8080/profile/profileImg/${username.current}`} alt="" id="img-main" loading="lazy" width="50" height="50" style={{borderRadius: "50%",}}/>
                     </div>
                     <div>
                         <form >

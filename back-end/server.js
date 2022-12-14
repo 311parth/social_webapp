@@ -26,6 +26,9 @@ const logout = require("./routes/logout");
 const api = require("./routes/api");
 const signup = require("./routes/signup");
 const profile = require("./routes/profile")
+const media = require("./routes/media")
+
+
 
 app.get("/", (req, res) => {
   res.send("he");
@@ -38,6 +41,8 @@ app.use("/logout", logout);
 app.use("/signup", signup);
 app.use("/api", api);
 app.use("/profile", profile);
+app.use("/media", media);
+
 
 
 app.listen(process.env.PORT, () => {

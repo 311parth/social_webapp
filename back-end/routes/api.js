@@ -11,6 +11,7 @@ const { followersModel } = require("../model/followersModel");
 const { route } = require("./home");
 const fs = require("fs");
 
+
 var seq = 0;
 //this will only run when server is restarted , to get last seq number
 postModel
@@ -81,7 +82,7 @@ async function savePostImgToDB(req, res, next) {
         seq: seq,
         img: {
           data: fs.readFileSync("uploads/" + fileOriginalName),
-          contentType: "image/png",
+          contentType: "image/jpeg",
           name:fileOriginalName
         },
       });
@@ -93,11 +94,12 @@ async function savePostImgToDB(req, res, next) {
         .catch((err) => {
           console.log(err, "error has occur");
         });
-      console.log(req.body);
+      //console.log(req.body);
       fs.rm("uploads/" +fileOriginalName, () => {
         // console.log(3, Date.now());
         // console.log("stored at db removed at server");
       });
+
   }
   else{
     // console.log("req.file else")
@@ -141,7 +143,7 @@ router
     const username = getLoggedUser(req.cookies.secret, req.cookies.uname);
     const loggedUserData = await getLoggedUserData(username);
     // console.log(loggedUserData)
-    if(loggedUserData[0]){
+    if( loggedUserData[0]){
       var followingUsers = loggedUserData[0].following;
       await postModel
         .find({ uname: { $in: followingUsers } }, { _id: 0, time: 0, __v: 0 })

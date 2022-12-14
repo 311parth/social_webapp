@@ -469,7 +469,7 @@ footer a{
     align-items: center;
 }
 .post-img-container img{
-    width: 520;
+    width: 520px;
     height: 520px;
     object-fit: cover;
 }

@@ -265,7 +265,7 @@ function Post(props) {
                     </div>
                     </div>
                     <div className="post-img-container">
-                        <img src={`http://localhost:8080/profile/profileImg/${props.uname}`}  alt="" srcset="" />
+                        <img id={`post-img-${props.seq}`} src={`http://localhost:8080/media/image/post/${props.uname}/${props.seq}`}  alt="" srcset="" />
                     </div> 
 
                     <div className="interaction-container">

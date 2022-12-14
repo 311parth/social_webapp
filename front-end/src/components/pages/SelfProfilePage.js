@@ -16,7 +16,7 @@ function SelfProfilePage(props) {
 
     useEffect(() => {
         const usernamePromise = new Promise((resolve,reject)=>{
-            if(navState.state){
+            if(navState.state && username.current){
                 username.current = navState.state.username;
                 resolve();
             }else{
@@ -91,6 +91,8 @@ function SelfProfilePage(props) {
                 ).src = `http://localhost:8080/profile/profileImg/${username.current}`;
             });
     }
+    
+    console.log(username)
     if(usernameArray){
         return (
             <>

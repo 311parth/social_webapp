@@ -2,23 +2,25 @@ const express = require("express");
 const authenticateToken = require("../helper/authenticateToken");
 let router = express.Router();
 
-const getLoggedUserData = require("../helper/getLoggedUserData")
 const getLoggedUser = require("../helper/getLoggedUser")
 
-const {postModel} = require("../model/postModel")
+const {postModel} = require("../model/postModel");
+const getLoggedUserData = require("../helper/getLoggedUserData");
 const postAuthentication = async(req,res,next)=>{
     const username  = await getLoggedUser(req.cookies.secret,req.cookies.uname)
 
-    getLoggedUserData(username).then(async(result)=>{
-        // console.log(result)
+    await getLoggedUserData(username).then((result)=>{
+        
+        // console.log("r",result)
         if(result && result[0].following.includes(req.params.username) || req.params.username===username){
             next();
         }
         else{
+            // console.log("here")
             res.sendStatus(401);
         }
-        // res.json(result)
     })
+
 }
 router.route("/image/post/:username/:seq").get(authenticateToken,postAuthentication,async(req, res) => {
     await postModel.findOne({seq:req.params.seq},async(err,result)=>{

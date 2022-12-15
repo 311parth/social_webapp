@@ -139,6 +139,7 @@ router
     res.json({ posted: 1 });
   })
 
+
   .get(authenticateToken, async (req, res) => {
     const username = getLoggedUser(req.cookies.secret, req.cookies.uname);
     const loggedUserData = await getLoggedUserData(username);
@@ -166,6 +167,44 @@ router
       return res.json([])
     }
   });
+
+  router.route("/post/latest/:username").get(authenticateToken,(req,res)=>{
+    const username = getLoggedUser(req.cookies.secret, req.cookies.uname);
+
+    let loggedUserData ;
+
+     getLoggedUserData(username).then((result)=>{
+        
+      if(result && result[0].following){
+        if(result[0].following.includes(req.params.username)){
+          postModel
+          .find({ uname: { $in: req.params.username } }, { _id: 0, time: 0, __v: 0 })
+          .sort({ seq: -1 })
+          .limit(5)
+          .clone()
+          .exec(async (err, result) => {
+            if (err) {
+              res.sendStatus(500);
+              return;
+            }
+            if (result) {
+              res.send(result);
+            } else {
+              return res.status("404").json({ err });
+            }
+        });
+
+        }else{
+          res.json({});
+        }
+      }
+      else{
+          // console.log("here")
+          res.sendStatus(401);
+      }
+  })
+  })
+
 
 router.route("/interaction/:id").get(authenticateToken, async (req, res) => {
   const username = getLoggedUser(req.cookies.secret, req.cookies.uname);
@@ -275,7 +314,7 @@ router.route("/follow").post(async (req, res) => {
           }
         })
         //it means now user is  following so button text will be following
-        res.json({ isok: 1, msg: "Following" });
+        res.json({ isok: 1, msg: "Following" ,"follow":1});
       } else {
         result.following = result.following.filter(
           (username) => username !== followedUsername
@@ -292,7 +331,7 @@ router.route("/follow").post(async (req, res) => {
             }
           })
           //it means now user is not following so button text will be follow
-          res.json({ isok: 1, msg: "Follow" });
+          res.json({ isok: 1, msg: "Follow" ,"follow":0});
         });
       }
       // console.log(result);

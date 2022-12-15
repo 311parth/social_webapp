@@ -1,9 +1,13 @@
 import React,{useContext} from 'react'
-import {UsernameContext} from "./pages/HomePage"
+import {UsernameContext,FollowingChangeContext} from "./pages/HomePage"
 
 function SidebarFollowCard(props) {
     //TODO: do not show username that already followed at first load
     const username = useContext(UsernameContext);//logged username 
+    const followingChange = useContext(FollowingChangeContext);
+    // console.log(followingChange)
+
+
     function follow(params) {
         var body = {
             username : username,
@@ -24,6 +28,19 @@ function SidebarFollowCard(props) {
             {
                 // console.log("h")
                 document.getElementById("follow-button-"+props.id).innerText = data.msg;
+                if(data.follow===1){
+                    //this means that logged user is now follwoing props.username
+                    followingChange.setFollowingChange({
+                       username: props.username,
+                       following:1
+                    });
+                }else{
+                    //this means that logged user is now not follwoing props.username (follow button click by 2 times)
+                    followingChange.setFollowingChange({
+                        username: props.username,
+                        following:0
+                    });
+                }
             }
         });
     }

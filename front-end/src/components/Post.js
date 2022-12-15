@@ -17,6 +17,7 @@ function setFill(element) {
 var fetchNow = 0;
 
 function Post(props) {
+    // console.log(props.seq,typeof(props.seq),props.seq.toString(),typeof(props.seq.toString()))
     // const [interaction,setInteraction]  = useState({like : 0,dislike:0});
 
     const [interaction, setInteraction] = useState(() => {
@@ -230,7 +231,8 @@ function Post(props) {
         isfetch.current = false;
         if (fetchNow === 0) setFetchNow(1);
         else setFetchNow(0);
-    }, 5000);
+    
+    }, 10000);
     const num = 0;
     return (
         <>
@@ -265,7 +267,7 @@ function Post(props) {
                     </div>
                     </div>
                     <div className="post-img-container">
-                        <img id={`post-img-${props.seq}`} src={`http://localhost:8080/media/image/post/${props.uname}/${props.seq}`}  alt="" srcset="" />
+                        <img id={`post-img-${props.seq}`} src={`http://localhost:8080/media/image/post/${props.uname}/${props.seq}`}  alt="" srcSet="" />
                     </div> 
 
                     <div className="interaction-container">

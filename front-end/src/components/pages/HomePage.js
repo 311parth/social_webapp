@@ -5,6 +5,7 @@ import Sidebar from '../Sidebar'
 import { useEffect, useState ,createContext,useContext } from 'react'
 import FetchError from '../FetchError'
 export const UsernameContext = createContext();
+export const FollowingChangeContext = createContext();
 
 
 function HomePage() {
@@ -12,6 +13,16 @@ function HomePage() {
     const [username, setUsername] = useState();
 
     const [post, setPost] = useState([]);
+    const [newPost, setNewPost] = useState([]);
+
+    const [followingChange,setFollowingChange] = useState({
+        username:"",
+        following:null
+    });
+
+
+
+
     useEffect(() => {
         fetch("/api/get_username", {
             method: 'GET',
@@ -60,6 +71,39 @@ function HomePage() {
                 await setPost(data)
             })
     }, [])
+    useEffect(() => {
+        //this will update new followed/unfollowd user's latest 5 post (FOLLOWED OR UNFOLLOWED FROM SIDEBAR ONLY)
+
+        // console.log("@",followingChange)
+
+        //this means following
+        if(followingChange.following===1){
+            fetch(`/api/post/latest/${followingChange.username}`, {
+                method: "GET",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: "include",
+            }).then((res) => {
+                if (res.ok) return res.json();
+                else res.json({ "isok": 0 })
+            })
+            .then(async (data) => {
+                    // console.log(data,typeof(data))
+                    data.forEach(element => {
+                        newPost.push(element);
+                    });
+                    setNewPost([...newPost]);
+            })
+        }else{
+            //removing post of latest unfollwoed account (ONLY FROM UNFOLLOWED FROM THE  SIDEBAR )
+            setNewPost(newPost.filter((item)=>{
+                return item.uname!== followingChange.username;
+            }));
+        }
+        
+    }, [followingChange])
+
 
     if (errorMsg === 1) {
         return (
@@ -71,21 +115,27 @@ function HomePage() {
             // console.log(post)
             return (
                 <>
-                    <UsernameContext.Provider value={username}>
+                    <UsernameContext.Provider value={username} >
                         {errorMsg === 1 ? <h1>Wrong Username,Password</h1> : ""}
                         <Navbar/>
     
                         <div className="home-page-container">
                             <div className="home-post-container">
-
-                                { post ?  post.map((post, i) => {
-                                    return <Post id={i.toString()} seq={post.seq} uname={post.uname} title={post.title} desc={post.desc} key={i} />
+                                { newPost[0] && newPost ?  newPost.map((newPost, i) => {
+                                    return <Post id={newPost.seq} seq={newPost.seq} uname={newPost.uname} title={newPost.title} desc={newPost.desc} key={newPost.seq} />
                                     }) : ""
                                 }
-                            </div>  
-                        
-                        {/* <Sidebar/> */}
-                            <Sidebar/>
+
+                                {/* {console.log("new",newPost,typeof(newPost))} */}
+
+                                { post ?  post.map((post, i) => {
+                                    return <Post id={post.seq} seq={post.seq} uname={post.uname} title={post.title} desc={post.desc} key={post.seq} />
+                                    }) : ""
+                                }
+                            </div>
+                            <FollowingChangeContext.Provider value={{followingChange,setFollowingChange}}>
+                                <Sidebar/>
+                            </FollowingChangeContext.Provider>
                         </div>
                     </UsernameContext.Provider>
                 </>

@@ -1,14 +1,35 @@
-import React from 'react'
+import React,{useEffect, useRef, useState} from 'react'
 import Navbar from '../Navbar'
-
+import FetchError from '../FetchError';
 import {useLocation} from 'react-router-dom'
 
 function PostPage(props) {
 
     //for getting data from page to page 
     // https://stackoverflow.com/questions/67061088/can-not-pass-state-with-react-router-dom-v6-beta-state-is-null
+    
     let location = useLocation();
-    var username = location.state.username
+    var [username,setUsername] =useState();
+    useEffect(() => {
+            if(location.state && location.state.username){
+                // username.current = location.state.username;
+                setUsername(location.state.username)
+            }else{
+                fetch("/api/get_username", {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: "include",
+                }).then((response) => response.json())
+                    .then((data) => {
+                        // console.log(data)
+                        // username.current= data.username;
+                        setUsername(data.username)
+                })
+            }
+    })
+    
 
     var body ={
         postUname :"",
@@ -65,39 +86,42 @@ function PostPage(props) {
 
 
 
-    
-
-    return (
-        <>
-            <Navbar/>
-            <form className="post-input">
-                <input type="text"  name="" id="input-post-title"  className="post-input-title post-input-element" placeholder="Title" 
-                    onChange={(e)=>{body.postTitle = e.target.value}}
-                />
-                <textarea type="text" name="" id="input-post-desc"  className="post-input-desc post-input-element" placeholder="Description"
-                    onChange={(e)=>{body.postDesc = e.target.value}}
-                />
-
-                <label className="input-profile-img">
-                    <span className="material-symbols-outlined material-icons-md " >
-                    image
-                    </span>
-                    <span id="input-post-img-text">
-                    Tap to Attach Image
-                    </span>
-                        <input type="file" name="" id="inputPostImg" style={
-                        {
-                            display: "none"
-                        }}
-                        onChange={async() => {
-                            document.getElementById("input-post-img-text").textContent = "Attached"
-                        }}
+    if(username){
+        return (
+            <>
+                <Navbar/>
+                <form className="post-input">
+                    <input type="text"  name="" id="input-post-title"  className="post-input-title post-input-element" placeholder="Title" 
+                        onChange={(e)=>{body.postTitle = e.target.value}}
                     />
-              </label>
-                <input type="button" onClick={post} value="post" className="post-input-submit post-input-element" />
-            </form>
-        </>
-    )
+                    <textarea type="text" name="" id="input-post-desc"  className="post-input-desc post-input-element" placeholder="Description"
+                        onChange={(e)=>{body.postDesc = e.target.value}}
+                    />
+    
+                    <label className="input-profile-img">
+                        <span className="material-symbols-outlined material-icons-md " >
+                        image
+                        </span>
+                        <span id="input-post-img-text">
+                        Tap to Attach Image
+                        </span>
+                            <input type="file" name="" id="inputPostImg" style={
+                            {
+                                display: "none"
+                            }}
+                            onChange={async() => {
+                                document.getElementById("input-post-img-text").textContent = "Attached"
+                            }}
+                        />
+                  </label>
+                    <input type="button" onClick={post} value="post" className="post-input-submit post-input-element" />
+                </form>
+            </>
+        )
+    }else{
+        <FetchError/>
+    }
+
 }
 
 export default PostPage

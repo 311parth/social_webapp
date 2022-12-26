@@ -92,7 +92,7 @@ function SelfProfilePage(props) {
             });
     }
     
-    console.log(username)
+    // console.log(username)
     if(usernameArray){
         return (
             <>
@@ -149,10 +149,7 @@ function SelfProfilePage(props) {
                                 }
                             </div>
                         </div>
-
                     </div>
-                    
-    
             </>
         );
     }

@@ -22,6 +22,8 @@ postModel
   })
   .sort({ seq: -1 });
 // console.log(seq);
+
+
 router.route("/").get((req, res) => {
   res.send("jjj");
 });

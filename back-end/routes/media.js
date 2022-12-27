@@ -23,16 +23,21 @@ const postAuthentication = async(req,res,next)=>{
 
 }
 router.route("/image/post/:username/:seq").get(authenticateToken,postAuthentication,async(req, res) => {
-    await postModel.findOne({seq:req.params.seq},async(err,result)=>{
-        if(err)throw err;
-        if(result && result.img && result.img.contentType){//here must have to check result.img.contentType
-                // console.log(result.img.name)
-                res.contentType(result.img.contentType);
-                res.send(result.img.data);
-        }else{
-            res.sendStatus(404);
-        }
-    }).clone()
+    try {
+        
+        await postModel.findOne({seq:req.params.seq},async(err,result)=>{
+            if(err)throw err;
+            if(result && result.img && result.img.contentType){//here must have to check result.img.contentType
+                    // console.log(result.img.name)
+                    res.contentType(result.img.contentType);
+                    res.send(result.img.data);
+            }else{
+                res.sendStatus(404);
+            }
+        }).clone()
+    } catch (error) {
+        console.log(error);
+    }
 //   res.json({ username: req.params.username});
 });
 

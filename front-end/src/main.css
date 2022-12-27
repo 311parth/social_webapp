@@ -223,9 +223,7 @@ footer a{
 
 .post-container{
     margin-top: 0.7rem;
-    /* background: red; */
     /* width: 70%; */
-    /* border: 0.5rem solid red; */
 }
 
 .post-main{
@@ -235,7 +233,7 @@ footer a{
     border-radius: 10px 25px;
     font-family: 'Ubuntu', sans-serif;
     font-size: 0.9rem;
-    /* background-color: #E63E6D; */
+    /* background-color: #E63E6D;  */
 }
 
 .post-username{
@@ -247,7 +245,6 @@ footer a{
 .post-title{
     padding: 0;
     margin: 0;
-    /* background: red; */
 }
 
 .post-desc-container {
@@ -272,6 +269,7 @@ footer a{
 }
 .interaction-container{
     display: flex;
+    margin: 0.3rem 5vw;
 }   
 
 .interaction-btn{
@@ -474,6 +472,9 @@ footer a{
 .post-img-container img{
     width: 520px;
     height: 520px;
+    /* width: 32.5rem;
+    height: 32.5rem; */
+    max-width: 100%;
     object-fit: cover;
 }
 
@@ -523,4 +524,97 @@ footer a{
     position: fixed;
     z-index: 100;
     /* display: none; */
+}
+
+#modal{
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items:flex-end;
+    background-color: #252A34;
+    color:white;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s ease-in;
+    width: 80vw;
+    /* width: fit-content;   */
+    /* width: 80%; */
+}
+.active{
+    opacity: 100 !important;
+    pointer-events: all !important;
+}
+
+.modal-main{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    background:#E63E6D;
+    pointer-events: all;
+    /* height: 100vh; */
+    /* margin: 0 1rem; */
+    /* cursor: pointer; */
+}
+
+#modal-close{
+    height: fit-content;
+    width: fit-content;
+    font-size: 1.3rem;
+    background: #1FAB89;
+    color: #252A34;
+    outline: #E63E6D;
+    border: 2px solid  #E63E6D;
+    border-radius: 5px;
+    /* margin: 0; */
+    margin: 5px 1rem 0 1rem;
+}
+.modal-container{
+    margin: auto;
+    padding-bottom: 2rem;
+}
+
+@media only screen and (max-width: 800px) {
+    #modal{
+        width: 90vw;
+    }
+    .post-container img{
+        max-width: 85vw;
+        max-height: 50vh;
+    }
+}
+
+.comment-form{
+    display: flex;
+    flex-direction: row;
+    gap : 0.5rem;
+    margin: 0.4rem 5vw;   
+}
+.post-btn{
+    width: 3.5rem;
+    height: 2rem;
+    background: #1FAB89;
+    color: #252A34;
+    border-radius: 7px;
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 1rem;
+    cursor: pointer;
+}
+.post-btn:hover{
+    background: #252A34;
+    color: #E63E6D;
+}
+
+.post-text-input{
+    border-radius: 7px;
+    font-size: 0.9rem;
+    padding: 0.3rem;
+}
+.comment-form input{
+    outline: none;
+    background: transparent;
+    border: 2px solid #E63E6D;
+    border-width: 0px 2px 3px 0px;
+    color: white;
+    width: 15rem;
 }

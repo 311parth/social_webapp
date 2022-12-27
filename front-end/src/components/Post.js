@@ -88,6 +88,13 @@ function Post(props) {
         if (username.current !== "") {
             fetchIt();
         }
+
+        //removing comment if user is in selfprofile page
+        if(window.location.pathname==="/profile"){
+            document.querySelectorAll(".comment-form").forEach(element =>{
+                element.outerHTML="";
+            })
+        }
     }, []);
 
     // TODO: add post like button fill or unfill at  first load
@@ -234,6 +241,16 @@ function Post(props) {
     
     }, 10000);
     const num = 0;
+
+    const submitComment =(e)=>{
+        const postCommentInput = document.getElementById(`post-comment-input-${props.seq}`);
+        console.log(document.getElementById(`post-comment-input-${props.seq}`).value)
+        postCommentInput.value="";
+    }
+
+    
+
+
     return (
         <>
             <div className="post-container">
@@ -301,9 +318,15 @@ function Post(props) {
                             </span>
                         </button>
                     </div>
+                    <div className="comment-form" >
+                            <input type="text" id={`post-comment-input-${props.seq}`} className="post-text-input" placeholder="Add comment" autoComplete="off"/>
+                            <button className="post-btn" type="button" onClick={(e)=>submitComment(e)}>Post</button>
+                    </div>
                 </div>
             </div>
         </>
+
+
     );
 }
 

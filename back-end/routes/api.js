@@ -8,6 +8,8 @@ const authenticateToken = require("../helper/authenticateToken");
 const { postModel } = require("../model/postModel");
 const { interactionModel } = require("../model/interactionModel");
 const { followersModel } = require("../model/followersModel");
+const {commentModel} = require("../model/commentModel")
+
 const { route } = require("./home");
 const fs = require("fs");
 
@@ -434,6 +436,44 @@ router.route("/user").get(async(req,res)=>{
   })
 })
 
+
+router.route("/post/comment/:seq").get(authenticateToken,async(req,res)=>{
+  console.log("comment get req got",req.params.id)
+  res.json({"isok":1});
+})
+.post(authenticateToken,async(req,res)=>{
+  const username = getLoggedUser(req.cookies.secret,req.cookies.uname)
+  console.log("comment post req got",req.params.seq)
+  // var newComment = await  new commentModel({
+  //   seq : req.params.seq,
+  //   username : username,
+  //   comment : req.body.comment
+  // }).save();
+ 
+  commentModel.findOne({seq:req.params.seq},async(err,result)=>{
+    if(err)throw err;
+    if(result){
+      console.log("it means that comment document is created for this seq number")
+      //it means that comment document is created for this seq number
+      result.comment = [...result.comment,{
+        //appending new comment to array of comments for this seq 
+        username : username,
+        comment : req.body.comment
+      }];
+      await result.save();
+    }else{
+      //creating  comment document for this seq number 
+      const newComment = await commentModel({
+        seq: req.params.seq,
+        comment : [{
+          username: username,
+          comment : req.body.comment
+        }]
+      }).save();
+    }
+  })
+  res.json({"isok":1})
+})
 
 
 module.exports = router;

@@ -244,8 +244,24 @@ function Post(props) {
 
     const submitComment =(e)=>{
         const postCommentInput = document.getElementById(`post-comment-input-${props.seq}`);
-        console.log(document.getElementById(`post-comment-input-${props.seq}`).value)
-        postCommentInput.value="";
+        console.log(postCommentInput.value)
+        var commentPostBody = {
+            comment : postCommentInput.value
+        }
+
+        fetch("/api/post/comment/"+props.seq, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body : JSON.stringify(commentPostBody)
+        })
+            .then((response) => response.json())
+            .then(async (data) => {
+                console.log(data)
+            })
+    postCommentInput.value="";
     }
 
     

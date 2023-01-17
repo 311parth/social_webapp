@@ -4,7 +4,8 @@ import {Link} from 'react-router-dom'
 function FetchError() {
   return (
     <span>
-      Username is not fetched succesfully by server
+      wait 10seconds <br/>
+      Something went wrong 
       <Link to={"/login"}>login again</Link>
     </span>
   );

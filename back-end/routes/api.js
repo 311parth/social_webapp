@@ -462,7 +462,7 @@ router.route("/post/comment/:seq").get(authenticateToken,async(req,res)=>{
   commentModel.findOne({seq:req.params.seq},async(err,result)=>{
     if(err)throw err;
     if(result){
-      console.log("it means that comment document is created for this seq number")
+      // console.log("it means that comment document is created for this seq number")
       //it means that comment document is created for this seq number
       result.comment = [...result.comment,{
         //appending new comment to array of comments for this seq 

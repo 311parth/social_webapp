@@ -39,6 +39,13 @@ function Post(props) {
     let username = useRef();
     let isliked = useRef(0);
     let isdisliked = useRef(0);
+    let ishome = useRef(0);
+    if(window.location.pathname==="/home"){
+        ishome.current=1;
+    }else{
+        ishome.current=0;
+    }
+
     // console.log(window.location.pathname)
     useEffect(() => {
         // console.log(window.location)
@@ -60,6 +67,7 @@ function Post(props) {
         } else {
             // username = usernameDefault;
             username.current = usernameDefault;
+
         }
 
         //setting style for liked and disliked based on props
@@ -344,7 +352,6 @@ function Post(props) {
     var i =0;
     // console.log("isliked : ",isliked,"isdisliked:",isdisliked)
     return (
-        
         <>
             <div className="post-container" >
                 <div className="post-main">
@@ -412,29 +419,29 @@ function Post(props) {
                             </span>
                         </button>
                     </div>
-                    <div className="comment-form" >
-                            <input type="text" id={`post-comment-input-${props.seq}`} className="post-text-input" placeholder="Add comment" autoComplete="off"/>
-                            <button className="post-btn" type="button" onClick={(e)=>submitComment(e)}>Post</button>
-                    </div>
-                    <span className="comment-label">Comments</span>
-                    <div className="comment-container">
-                        {/* <span className="comment"><a href="">@username</a> abc </span>
-                        <span className="comment"><a href="">@username</a> abc </span>
-                        <span className="comment"><a href="">@username</a> abc </span>
-                        <span className="comment"><a href="">@username</a> abc </span> */}
-                        
-                        {
-                            comments ? comments.map((obj)=>{
-                                i++;
-                                return <span key={props.seq+"-"+i} className="comment"><a href="">@{obj.username}</a>{obj.comment} </span>
-                            }) : ""
-                        }
-                        
-                    </div>
+                    {/* if this post is on home page then don't show comment box  */}
+                    {!ishome.current ?
+                        <>
+                            <div className="comment-form" >
+                                <input type="text" id={`post-comment-input-${props.seq}`} className="post-text-input" placeholder="Add comment" autoComplete="off" />
+                                <button className="post-btn" type="button" onClick={(e) => submitComment(e)}>Post</button>
+                            </div>
+                            <span className="comment-label">Comments</span>
+                            <div className="comment-container">
+                                {
+                                    comments ? comments.map((obj) => {
+                                        i++;
+                                        return <span key={props.seq + "-" + i} className="comment"><a href="">@{obj.username}</a>&nbsp;{obj.comment} </span>
+                                    }) : ""
+                                }
+                            </div>
+                        </>
+                        : ""}
+                    
+                    
                 </div>
             </div>
         </>
-
     );
 }
 

@@ -647,3 +647,21 @@ footer a{
 .comment{
     padding-top: 0.3rem;
 }
+
+.back-btn{
+    background:#252A34;
+    color: white;
+    border-color:#1FAB89;
+    cursor: pointer;
+    border-radius: 15px;
+    margin: 0;
+    position :fixed;
+    display: flex;
+    align-items: center;
+}
+.back-btn span{
+    font-size: 1rem;
+}
+.back-icon {
+    font-size: 2rem !important;
+}

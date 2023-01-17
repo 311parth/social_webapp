@@ -2,21 +2,27 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom';
 import Post from '../Post';
 import {useLocation} from 'react-router-dom';
+import FetchError from '../FetchError';
 
-function PostTestPage() {
+function PostViewPage() {
     //TODO: optimise the re-rendering while go back
     const navigate = useNavigate();
     const location  =  useLocation();
     // console.log(location.state)
     const state = location.state;
-    return (
-        <>  
+        return (
+        <>
+                <button onClick={()=>{navigate(-1)}} className="back-btn">
+                    <span class="material-symbols-outlined back-icon">
+                        arrow_back
+                    </span>
+                    <span>Back</span>
+                </button>
 
-            <input type="button" value="back" onClick={()=>{navigate(-1)}}/>
             <Post id={state.seq} seq={state.seq} uname={state.uname} title={state.title} desc={state.desc} key={state.seq} isliked={location.state.isliked} isdisliked={location.state.isdisliked}/>
             {/* <Post/>  */}
         </>
     )
 }
 
-export default PostTestPage
+export default PostViewPage

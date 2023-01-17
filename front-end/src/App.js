@@ -8,6 +8,7 @@ import LogoutPage from './components/pages/LogoutPage';
 import SelfProfilePage from './components/pages/SelfProfilePage';
 import ProfilePage from './components/pages/ProfilePage';
 import TestPage from './components/pages/TestPage';
+import PostTestPage from './components/pages/PostTestPage';
 function App() {
 
   return (
@@ -25,6 +26,8 @@ function App() {
           <Route path="/user" element={<ProfilePage/>}></Route>
           <Route path="/user" element={<ProfilePage/>}></Route>
           <Route path="/test" element={<TestPage/>}></Route>
+          <Route path="home/post/view/:id" element={<PostTestPage/>}></Route>
+
 
         </Routes>
     </BrowserRouter>

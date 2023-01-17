@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect, useContext } from "react";
 import { UsernameContext } from "./pages/HomePage";
 import { Link } from "react-router-dom";
 import FetchError from "./FetchError";
+import { useNavigate } from 'react-router-dom';
+import {useLocation} from 'react-router-dom';
 
 var tempIsFetch = false;
 function setFill(element) {
@@ -17,6 +19,10 @@ function setFill(element) {
 var fetchNow = 0;
 
 function Post(props) {
+    
+    const navigate = useNavigate();
+    const location = useLocation();
+
     // console.log(props.seq,typeof(props.seq),props.seq.toString(),typeof(props.seq.toString()))
     // const [interaction,setInteraction]  = useState({like : 0,dislike:0});
 
@@ -31,9 +37,13 @@ function Post(props) {
 
     var interactionData = {};
     let username = useRef();
+    let isliked = useRef(0);
+    let isdisliked = useRef(0);
     // console.log(window.location.pathname)
     useEffect(() => {
-        if (window.location.pathname === "/user") {
+        // console.log(window.location)
+        if (window.location.pathname != "/home") {
+            // console.log("username fetching")
             fetch("/api/get_username", {
                 method: "GET",
                 headers: {
@@ -50,6 +60,24 @@ function Post(props) {
         } else {
             // username = usernameDefault;
             username.current = usernameDefault;
+        }
+
+        //setting style for liked and disliked based on props
+        // console.log(props.isliked)
+        if(props.isliked){
+            var element = document.getElementById("material-symbols-outlined-like-" + props.id);
+
+            if(!element.classList.contains("fill-1")){
+                element.classList.add("fill-1");
+                
+            }
+        }
+        if(props.isdisliked){
+            var element = document.getElementById("material-symbols-outlined-dislike-" + props.id);
+
+            if(!element.classList.contains("fill-1")){
+                element.classList.add("fill-1");
+            }
         }
         function fetchIt() {
             // console.log("fetch",username.current)
@@ -71,8 +99,10 @@ function Post(props) {
                     var element = document.getElementById(
                         "material-symbols-outlined-like-" + props.id
                     );
+
                     if (interactionData.liked_uname.includes(username.current)) {
                         // console.log(interactionData.liked_uname)
+                        isliked.current = 1;
                         element.classList.add("fill-1");
                         setFill(element);
                     }
@@ -81,6 +111,7 @@ function Post(props) {
                     );
                     if (interactionData.disliked_uname.includes(username.current)) {
                         // console.log(interactionData.disliked_uname)
+                        isdisliked.current =1;
                         element.classList.add("fill-1");
                         setFill(element);
                     }
@@ -148,15 +179,20 @@ function Post(props) {
             .then((data) => { });
 
         setFill(element);
-        body.fill === 0
-            ? setInteraction({
+        if(body.fill===0){
+            isliked.current = 1;
+            setInteraction({
                 like: interaction.like + 1,
                 dislike: interaction.dislike,
             })
-            : setInteraction({
+        }else{
+            isliked.current =0;
+            setInteraction({
                 like: interaction.like - 1,
                 dislike: interaction.dislike,
-            });
+            })
+        }
+
     };
     const submit_dislike = () => {
         // console.log("func",username.current)
@@ -181,15 +217,19 @@ function Post(props) {
             .then((res) => res.json())
             .then((data) => { });
         setFill(element);
-        body.fill === 0
-            ? setInteraction({
+        if(body.fill===0){
+            isdisliked.current=1;
+            setInteraction({
                 like: interaction.like,
                 dislike: interaction.dislike + 1,
             })
-            : setInteraction({
+        }else{
+            isdisliked.current = 0;
+            setInteraction({
                 like: interaction.like,
                 dislike: interaction.dislike - 1,
             });
+        }
     };
 
     const isfetch = useRef(tempIsFetch);
@@ -284,45 +324,63 @@ function Post(props) {
     postCommentInput.value="";
     }
 
-    
+    const postClicked = ()=>{
+        // console.log(location)
+        //if the post is on home page then only onclick, to avoid nested click on post components
+        if(location.pathname==="/home"){
+            navigate(`post/view/`+props.seq , {
+                state:{
+                    seq : props.seq,
+                    uname : props.uname,
+                    title : props.title,
+                    desc : props.desc,
+                    isliked : isliked.current,
+                    isdisliked : isdisliked.current
+                }
+            })
+        }
+    }
 
     var i =0;
+    // console.log("isliked : ",isliked,"isdisliked:",isdisliked)
     return (
+        
         <>
-            <div className="post-container">
+            <div className="post-container" >
                 <div className="post-main">
                     {/* TODO: add link on click to navigate to profile page for below div */}
-                    <div className="post-text-container">
+                    <div className="post-body"  id={`post-main-${props.seq}`} onClick={postClicked} >
+                            <div className="post-text-container">
 
-                    <div className="post-header">
-                        <img
-                            src={`http://localhost:8080/profile/profileImg/${props.uname}`}
-                            alt=""
-                            id="post-header-profile-img"
-                            loading="lazy"
-                            style={{
-                                height: "2rem",
-                                width: "2rem",
-                                borderRadius: "50%",
-                            }}
-                        />
-                        <Link
-                            className="post-username"
-                            to={`/user?username=${props.uname}`}
-                        >
-                            {" "}
-                            {"@" + props.uname}
-                        </Link>
+                                <div className="post-header">
+                                    <img
+                                        src={`http://localhost:8080/profile/profileImg/${props.uname}`}
+                                        alt=""
+                                        id="post-header-profile-img"
+                                        loading="lazy"
+                                        style={{
+                                            height: "2rem",
+                                            width: "2rem",
+                                            borderRadius: "50%",
+                                        }}
+                                    />
+                                    <Link
+                                        className="post-username"
+                                        to={`/user?username=${props.uname}`}
+                                    >
+                                        {" "}
+                                        {"@" + props.uname}
+                                    </Link>
+                                </div>
+                                <h3 className="post-title">{props.title}</h3>
+                                <div className="post-desc-container">
+                                    <p>{props.desc}</p>
+                                </div>
+                            </div>
+                        <div className="post-img-container">
+                            <img id={`post-img-${props.seq}`} src={`http://localhost:8080/media/image/post/${props.uname}/${props.seq}`}  alt="" srcSet="" />
+                        </div> 
                     </div>
-                    <h3 className="post-title">{props.title}</h3>
-                    <div className="post-desc-container">
-                        <p>{props.desc}</p>
-                    </div>
-                    </div>
-                    <div className="post-img-container">
-                        <img id={`post-img-${props.seq}`} src={`http://localhost:8080/media/image/post/${props.uname}/${props.seq}`}  alt="" srcSet="" />
-                    </div> 
-
                     <div className="interaction-container">
                         <button className="interaction-btn " onClick={submit_like}>
                             <span
@@ -358,7 +416,6 @@ function Post(props) {
                             <input type="text" id={`post-comment-input-${props.seq}`} className="post-text-input" placeholder="Add comment" autoComplete="off"/>
                             <button className="post-btn" type="button" onClick={(e)=>submitComment(e)}>Post</button>
                     </div>
-                        
                     <span className="comment-label">Comments</span>
                     <div className="comment-container">
                         {/* <span className="comment"><a href="">@username</a> abc </span>
@@ -367,7 +424,6 @@ function Post(props) {
                         <span className="comment"><a href="">@username</a> abc </span> */}
                         
                         {
-                            
                             comments ? comments.map((obj)=>{
                                 i++;
                                 return <span key={props.seq+"-"+i} className="comment"><a href="">@{obj.username}</a>{obj.comment} </span>
@@ -378,7 +434,6 @@ function Post(props) {
                 </div>
             </div>
         </>
-
 
     );
 }

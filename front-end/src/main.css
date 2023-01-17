@@ -236,6 +236,10 @@ footer a{
     /* background-color: #E63E6D;  */
 }
 
+.post-main:hover{
+    background: #252a34fa;  
+}
+
 .post-username{
     font-size: 1.2rem;
     color: #E63E6D;

@@ -24,6 +24,8 @@ function Post(props) {
         // console.log("setting interaction only once")
         return { like: 0, dislike: 0 };
     });
+    const [comments, setComments] = useState([]);
+
 
     const usernameDefault = useContext(UsernameContext);
 
@@ -52,6 +54,8 @@ function Post(props) {
         function fetchIt() {
             // console.log("fetch",username.current)
 
+
+            //fetching interactions
             fetch("/api/interaction/" + props.seq, {
                 method: "GET",
                 headers: {
@@ -83,7 +87,23 @@ function Post(props) {
                     //fetching profile image
                     // document.getElementById("post-header-profile-img").src = `http://localhost:8080/profile/profileImg/${username}`
                 });
+
+            //fetching comments
+            fetch("/api/post/comment/" + props.seq, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include",
+            })
+                .then((response) => response.json())
+                .then(async (data) => {
+                    // console.log(data)
+                    setComments(data)
+            });
+                
         }
+            
         // fetchIt();
         if (username.current !== "") {
             fetchIt();
@@ -179,7 +199,7 @@ function Post(props) {
         if (!isfetch.current) {
             // your API call func
             // console.log("u")
-            fetch("/api/interaction/" + props.seq, {
+            fetch("/api/interaction/"+props.seq, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -266,7 +286,7 @@ function Post(props) {
 
     
 
-
+    var i =0;
     return (
         <>
             <div className="post-container">
@@ -337,6 +357,23 @@ function Post(props) {
                     <div className="comment-form" >
                             <input type="text" id={`post-comment-input-${props.seq}`} className="post-text-input" placeholder="Add comment" autoComplete="off"/>
                             <button className="post-btn" type="button" onClick={(e)=>submitComment(e)}>Post</button>
+                    </div>
+                        
+                    <span className="comment-label">Comments</span>
+                    <div className="comment-container">
+                        {/* <span className="comment"><a href="">@username</a> abc </span>
+                        <span className="comment"><a href="">@username</a> abc </span>
+                        <span className="comment"><a href="">@username</a> abc </span>
+                        <span className="comment"><a href="">@username</a> abc </span> */}
+                        
+                        {
+                            
+                            comments ? comments.map((obj)=>{
+                                i++;
+                                return <span key={props.seq+"-"+i} className="comment"><a href="">@{obj.username}</a>{obj.comment} </span>
+                            }) : ""
+                        }
+                        
                     </div>
                 </div>
             </div>

@@ -211,6 +211,7 @@ router
 
 
 router.route("/interaction/:id").get(authenticateToken, async (req, res) => {
+  // console.log("interaction get req got ",req.params.id)
   const username = getLoggedUser(req.cookies.secret, req.cookies.uname);
 
   const seq = req.params.id;
@@ -438,12 +439,20 @@ router.route("/user").get(async(req,res)=>{
 
 
 router.route("/post/comment/:seq").get(authenticateToken,async(req,res)=>{
-  console.log("comment get req got",req.params.id)
-  res.json({"isok":1});
+  // console.log("comment get req got",req.params.seq)
+
+  commentModel.findOne({seq:req.params.seq},{"comment._id":0},async(err,result)=>{
+    if(err)throw err;
+    if(result){
+      res.json(result.comment)
+    }else{
+      res.json("")
+    }
+  })
 })
 .post(authenticateToken,async(req,res)=>{
   const username = getLoggedUser(req.cookies.secret,req.cookies.uname)
-  console.log("comment post req got",req.params.seq)
+  // console.log("comment post req got",req.params.seq)
   // var newComment = await  new commentModel({
   //   seq : req.params.seq,
   //   username : username,

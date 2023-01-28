@@ -55,6 +55,7 @@ function HomePage() {
             }
         }).then(data => setErrotMsg(0))
 
+        
         //fetching posts
         fetch("/api/post", {
             method: "GET",

@@ -3,7 +3,7 @@ import { UsernameContext } from "./pages/HomePage";
 import { Link } from "react-router-dom";
 import FetchError from "./FetchError";
 import { useNavigate } from 'react-router-dom';
-import {useLocation} from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 var tempIsFetch = false;
 function setFill(element) {
@@ -19,13 +19,9 @@ function setFill(element) {
 var fetchNow = 0;
 
 function Post(props) {
-    
+
     const navigate = useNavigate();
     const location = useLocation();
-
-    // console.log(props.seq,typeof(props.seq),props.seq.toString(),typeof(props.seq.toString()))
-    // const [interaction,setInteraction]  = useState({like : 0,dislike:0});
-
     const [interaction, setInteraction] = useState(() => {
         // console.log("setting interaction only once")
         return { like: 0, dislike: 0 };
@@ -40,10 +36,11 @@ function Post(props) {
     let isliked = useRef(0);
     let isdisliked = useRef(0);
     let ishome = useRef(0);
-    if(window.location.pathname==="/home"){
-        ishome.current=1;
-    }else{
-        ishome.current=0;
+    let isFirstFetch = useRef(0);
+    if (window.location.pathname === "/home") {
+        ishome.current = 1;
+    } else {
+        ishome.current = 0;
     }
 
     // console.log(window.location.pathname)
@@ -72,25 +69,23 @@ function Post(props) {
 
         //setting style for liked and disliked based on props
         // console.log(props.isliked)
-        if(props.isliked){
+        if (props.isliked) {
             var element = document.getElementById("material-symbols-outlined-like-" + props.id);
 
-            if(!element.classList.contains("fill-1")){
+            if (!element.classList.contains("fill-1")) {
                 element.classList.add("fill-1");
-                
+
             }
         }
-        if(props.isdisliked){
+        if (props.isdisliked) {
             var element = document.getElementById("material-symbols-outlined-dislike-" + props.id);
 
-            if(!element.classList.contains("fill-1")){
+            if (!element.classList.contains("fill-1")) {
                 element.classList.add("fill-1");
             }
         }
         function fetchIt() {
             // console.log("fetch",username.current)
-
-
             //fetching interactions
             fetch("/api/interaction/" + props.seq, {
                 method: "GET",
@@ -119,7 +114,7 @@ function Post(props) {
                     );
                     if (interactionData.disliked_uname.includes(username.current)) {
                         // console.log(interactionData.disliked_uname)
-                        isdisliked.current =1;
+                        isdisliked.current = 1;
                         element.classList.add("fill-1");
                         setFill(element);
                     }
@@ -139,19 +134,21 @@ function Post(props) {
                 .then(async (data) => {
                     // console.log(data)
                     setComments(data)
-            });
-                
+                });
+
+            //setting temp variable to 1 for first fetch 
+            isFirstFetch.current = 1;
         }
-            
+
         // fetchIt();
-        if (username.current !== "") {
+        if (username.current !== "" && !isFirstFetch.current) {
             fetchIt();
         }
 
         //removing comment if user is in selfprofile page
-        if(window.location.pathname==="/profile"){
-            document.querySelectorAll(".comment-form").forEach(element =>{
-                element.outerHTML="";
+        if (window.location.pathname === "/profile") {
+            document.querySelectorAll(".comment-form").forEach(element => {
+                element.outerHTML = "";
             })
         }
     }, []);
@@ -187,14 +184,14 @@ function Post(props) {
             .then((data) => { });
 
         setFill(element);
-        if(body.fill===0){
+        if (body.fill === 0) {
             isliked.current = 1;
             setInteraction({
                 like: interaction.like + 1,
                 dislike: interaction.dislike,
             })
-        }else{
-            isliked.current =0;
+        } else {
+            isliked.current = 0;
             setInteraction({
                 like: interaction.like - 1,
                 dislike: interaction.dislike,
@@ -225,13 +222,13 @@ function Post(props) {
             .then((res) => res.json())
             .then((data) => { });
         setFill(element);
-        if(body.fill===0){
-            isdisliked.current=1;
+        if (body.fill === 0) {
+            isdisliked.current = 1;
             setInteraction({
                 like: interaction.like,
                 dislike: interaction.dislike + 1,
             })
-        }else{
+        } else {
             isdisliked.current = 0;
             setInteraction({
                 like: interaction.like,
@@ -247,7 +244,7 @@ function Post(props) {
         if (!isfetch.current) {
             // your API call func
             // console.log("u")
-            fetch("/api/interaction/"+props.seq, {
+            fetch("/api/interaction/" + props.seq, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -306,87 +303,88 @@ function Post(props) {
         isfetch.current = false;
         if (fetchNow === 0) setFetchNow(1);
         else setFetchNow(0);
-    
+
     }, 10000);
     const num = 0;
 
-    const submitComment =(e)=>{
+    const submitComment = (e) => {
         const postCommentInput = document.getElementById(`post-comment-input-${props.seq}`);
-        console.log(postCommentInput.value)
+        // console.log(postCommentInput.value)
         var commentPostBody = {
-            comment : postCommentInput.value
+            comment: postCommentInput.value
         }
 
-        fetch("/api/post/comment/"+props.seq, {
+        fetch("/api/post/comment/" + props.seq, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
             credentials: "include",
-            body : JSON.stringify(commentPostBody)
+            body: JSON.stringify(commentPostBody)
         })
             .then((response) => response.json())
             .then(async (data) => {
                 console.log(data)
             })
-    postCommentInput.value="";
+        postCommentInput.value = "";
     }
 
-    const postClicked = ()=>{
-        // console.log(location)
-        //if the post is on home page then only onclick, to avoid nested click on post components
-        if(location.pathname==="/home"){
-            navigate(`post/view/`+props.seq , {
-                state:{
-                    seq : props.seq,
-                    uname : props.uname,
-                    title : props.title,
-                    desc : props.desc,
-                    isliked : isliked.current,
-                    isdisliked : isdisliked.current
-                }
-            })
-        }
+    const postClicked = (e) => {
+    
+            // console.log(location)
+            //if the post is on home page then only onclick, to avoid nested click on post components
+            if (location.pathname === "/home") {
+                navigate(`post/view/` + props.seq, {
+                    state: {
+                        seq: props.seq,
+                        uname: props.uname,
+                        title: props.title,
+                        desc: props.desc,
+                        isliked: isliked.current,
+                        isdisliked: isdisliked.current
+                    }
+                })
+            }
+
     }
 
-    var i =0;
+    var i = 0;
     // console.log("isliked : ",isliked,"isdisliked:",isdisliked)
     return (
         <>
             <div className="post-container" >
                 <div className="post-main">
                     {/* TODO: add link on click to navigate to profile page for below div */}
-                    <div className="post-body"  id={`post-main-${props.seq}`} onClick={postClicked} >
-                            <div className="post-text-container">
-
-                                <div className="post-header">
-                                    <img
-                                        src={`http://localhost:8080/profile/profileImg/${props.uname}`}
-                                        alt=""
-                                        id="post-header-profile-img"
-                                        loading="lazy"
-                                        style={{
-                                            height: "2rem",
-                                            width: "2rem",
-                                            borderRadius: "50%",
-                                        }}
-                                    />
-                                    <Link
-                                        className="post-username"
-                                        to={`/user?username=${props.uname}`}
-                                    >
-                                        {" "}
-                                        {"@" + props.uname}
-                                    </Link>
-                                </div>
-                                <h3 className="post-title">{props.title}</h3>
-                                <div className="post-desc-container">
-                                    <p>{props.desc}</p>
-                                </div>
+                    <div className="post-header">
+                        <img
+                            src={`http://localhost:8080/profile/profileImg/${props.uname}`}
+                            alt=""
+                            id="post-header-profile-img"
+                            loading="lazy"
+                            style={{
+                                height: "2rem",
+                                width: "2rem",
+                                borderRadius: "50%",
+                            }}
+                        />
+                        <Link
+                            className="post-username"
+                            to={`/user?username=${props.uname}`}
+                        >
+                            {" "}
+                            {"@" + props.uname}
+                        </Link>
+                    </div>
+                    <div className="post-body" id={`post-main-${props.seq}`} onClick={(e) => { postClicked(e) }} >
+                        <div className="post-text-container">
+                            <h3 className="post-title">{props.title}</h3>
+                            <div className="post-desc-container">
+                                <p>{props.desc}</p>
                             </div>
+                        </div>
                         <div className="post-img-container">
-                            <img id={`post-img-${props.seq}`} src={`http://localhost:8080/media/image/post/${props.uname}/${props.seq}`}  alt="" srcSet="" />
-                        </div> 
+                            <img id={`post-img-${props.seq}`} src={`http://localhost:8080/media/image/post/${props.uname}/${props.seq}`} alt="" srcSet="" />
+                        </div>
                     </div>
                     <div className="interaction-container">
                         <button className="interaction-btn " onClick={submit_like}>
@@ -437,8 +435,8 @@ function Post(props) {
                             </div>
                         </>
                         : ""}
-                    
-                    
+
+
                 </div>
             </div>
         </>

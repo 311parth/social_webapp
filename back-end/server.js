@@ -27,9 +27,20 @@ const api = require("./routes/api");
 const signup = require("./routes/signup");
 const profile = require("./routes/profile")
 const media = require("./routes/media")
+const socketRouter = require("./routes/socketRouter") 
 
+const http = require("http")
+const server = http.createServer(app);
 
-
+const io = require("socket.io")(server,{
+  cors:{
+    origin:"*"
+  }
+})
+// app.use((req, res, next) => {
+//   req.io = io;
+//   return next();
+// });
 app.get("/", (req, res) => {
   res.send("he");
 });
@@ -42,9 +53,19 @@ app.use("/signup", signup);
 app.use("/api", api);
 app.use("/profile", profile);
 app.use("/media", media);
+app.use("/socket",(req,res,next)=>{//passing io to this route
+  req.io = io;
+  next();
+},socketRouter)
 
+const socketEvents=require("./helper/socketEvents");
+module.exports = {io}
+socketEvents();
 
-
-app.listen(process.env.PORT, () => {
+server.listen(process.env.PORT,()=>{
   console.log(`Server running on port ${process.env.PORT}`);
-});
+})
+
+
+
+

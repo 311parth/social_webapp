@@ -446,7 +446,7 @@ router.route("/post/comment/:seq").get(authenticateToken,async(req,res)=>{
     if(result){
       res.json(result.comment)
     }else{
-      res.json("")
+      res.json("");
     }
   })
 })

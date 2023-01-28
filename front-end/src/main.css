@@ -233,13 +233,13 @@ footer a{
     border-radius: 10px 25px;
     font-family: 'Ubuntu', sans-serif;
     font-size: 0.9rem;
+    
     /* background-color: #E63E6D;  */
 }
 
 .post-main:hover{
-    background: #252a34fa;  
+    background: #252a34f5;  
 }
-
 .post-username{
     font-size: 1.2rem;
     color: #E63E6D;
@@ -264,6 +264,7 @@ footer a{
     cursor: pointer;
     padding: 0.5rem;
     margin-bottom: 0.8rem;
+    margin-left: 10%;
 }
 
 .post-text-container{
@@ -519,6 +520,10 @@ footer a{
         flex-direction: column;
         align-items: center;
     }
+    .post-header{
+        margin-left: 20%;
+    }
+    
 }
 
 #preloader{
@@ -655,9 +660,10 @@ footer a{
     cursor: pointer;
     border-radius: 15px;
     margin: 0;
-    position :fixed;
+    position:fixed;
     display: flex;
     align-items: center;
+    opacity: 0.8;
 }
 .back-btn span{
     font-size: 1rem;

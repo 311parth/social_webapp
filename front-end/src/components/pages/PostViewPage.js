@@ -13,7 +13,7 @@ function PostViewPage() {
         return (
         <>
                 <button onClick={()=>{navigate(-1)}} className="back-btn">
-                    <span class="material-symbols-outlined back-icon">
+                    <span className="material-symbols-outlined back-icon">
                         arrow_back
                     </span>
                     <span>Back</span>

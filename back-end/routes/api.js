@@ -212,6 +212,8 @@ router
 
 router.route("/interaction/:id").get(authenticateToken, async (req, res) => {
   // console.log("interaction get req got ",req.params.id)
+  console.log(req.params.id," => ",new Date().toUTCString());
+
   const username = getLoggedUser(req.cookies.secret, req.cookies.uname);
 
   const seq = req.params.id;

@@ -363,14 +363,15 @@ footer a{
 .sidebar-main{
     font-family: 'Ubuntu', sans-serif;
     /* background-color: #E63E6D; */
-    height: 90vh;
+    /* height: 90vh; */
+    min-height: fit-content;
     width: 25%;
     background:#3c3e42;
-    /* overflow-y: scroll; */
     /* padding: 0 1rem; */
     padding: 0;
     margin-left: 5rem;
     border-radius: 20px;
+    padding: 1rem 0rem;
 }
 
 .sidebar-header-text{

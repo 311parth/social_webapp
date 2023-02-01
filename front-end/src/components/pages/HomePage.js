@@ -1,25 +1,28 @@
-import React from 'react'
+import React, { memo } from 'react'
 import Navbar from '../Navbar'
 import Post from '../Post'
 import Sidebar from '../Sidebar'
-import { useEffect, useState ,createContext,useContext } from 'react'
+import { useEffect, useState ,createContext,useContext ,useRef} from 'react'
 import FetchError from '../FetchError'
 export const UsernameContext = createContext();
 export const FollowingChangeContext = createContext();
 
 
 function HomePage() {
+    const username = useRef();
 
-    const [username, setUsername] = useState();
-
-    const [post, setPost] = useState([]);
-    const [newPost, setNewPost] = useState([]);
+    // const [post, setPost] = useState([]);
+    // const [newPost, setNewPost] = useState([]);
 
     const [followingChange,setFollowingChange] = useState({
         username:"",
         following:null
     });
 
+    const [state,setState] = useState({
+        post:[],
+        newPost : [],
+    });
 
 
 
@@ -32,53 +35,57 @@ function HomePage() {
             credentials: "include",
         }).then((response) => response.json())
             .then((data) => {
-                setUsername(data.username)
+                // setUsername(data.username)
+                username.current = data.username;
             })
+
+            //fetching if user is logged or not
+
+            fetch("/home", {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: "include"
+            }).then(res => {
+                if (res.ok) {
+                    return res.json()
+                }
+                else {
+                    setErrotMsg(1);
+                }
+            }).then(data => setErrotMsg(0))
+    
+            
+            //fetching posts
+            fetch("/api/post", {
+                method: "GET",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: "include",
+            }).then((res) => {
+                if (res.ok) return res.json();
+                else res.json({ "isok": 0 })
+            })
+                .then(async (data) => {
+                    // await setPost(data)
+                    await setState({
+                        post : data,
+                        newPost : state.newPost
+                    })
+                })
     }, [])
 
     const [errorMsg, setErrotMsg] = useState(2);
 
-    useEffect(() => {
-        //fetching if user is logged or not
-        fetch("/home", {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            credentials: "include"
-        }).then(res => {
-            if (res.ok) {
-                return res.json()
-            }
-            else {
-                setErrotMsg(1);
-            }
-        }).then(data => setErrotMsg(0))
-
-        
-        //fetching posts
-        fetch("/api/post", {
-            method: "GET",
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            credentials: "include",
-        }).then((res) => {
-            if (res.ok) return res.json();
-            else res.json({ "isok": 0 })
-        })
-            .then(async (data) => {
-                // console.log(data);
-                await setPost(data)
-            })
-    }, [])
     useEffect(() => {
         //this will update new followed/unfollowd user's latest 5 post (FOLLOWED OR UNFOLLOWED FROM SIDEBAR ONLY)
 
         // console.log("@",followingChange)
 
         //this means following
-        if(followingChange.following===1){
+        if( followingChange.following===1){
             fetch(`/api/post/latest/${followingChange.username}`, {
                 method: "GET",
                 headers: {
@@ -90,17 +97,22 @@ function HomePage() {
                 else res.json({ "isok": 0 })
             })
             .then(async (data) => {
-                    // console.log(data,typeof(data))
                     data.forEach(element => {
-                        newPost.push(element);
+                        state.newPost.push(element);
                     });
-                    setNewPost([...newPost]);
+                    setState({
+                        post:state.post,
+                        newPost : state.newPost,
+                    })
             })
         }else{
-            //removing post of latest unfollwoed account (ONLY FROM UNFOLLOWED FROM THE  SIDEBAR )
-            setNewPost(newPost.filter((item)=>{
-                return item.uname!== followingChange.username;
-            }));
+            setState({
+                post:state.post,
+                newPost : (state.newPost.filter((item)=>{
+                    //removing post of latest unfollwoed account (ONLY FROM UNFOLLOWED FROM THE  SIDEBAR )
+                    return item.uname!== followingChange.username;
+                }))
+            })
         }
         
     }, [followingChange])
@@ -112,24 +124,20 @@ function HomePage() {
         )
     }
     if (window.sessionStorage.getItem("islogged") === "1") {
-        if(username){//if any only username is not undefined then load home page
-            // console.log(post)
+        if(username.current  && state.post){//if any only username is not undefined then load home page
+            // console.log(username,post)
             return (
                 <>
-                    <UsernameContext.Provider value={username} >
+                    <UsernameContext.Provider value={username.current} >
                         {errorMsg === 1 ? <h1>Wrong Username,Password</h1> : ""}
                         <Navbar/>
-    
                         <div className="home-page-container">
                             <div className="home-post-container">
-                                { newPost[0] && newPost ?  newPost.map((newPost, i) => {
+                                { state.newPost[0] && state.newPost ?  state.newPost.map((newPost, i) => {
                                     return <Post id={newPost.seq} seq={newPost.seq} uname={newPost.uname} title={newPost.title} desc={newPost.desc} key={newPost.seq} />
                                     }) : ""
                                 }
-
-                                {/* {console.log("new",newPost,typeof(newPost))} */}
-
-                                { post ?  post.map((post, i) => {
+                                { state.post ?  state.post.map((post, i) => {
                                     return <Post id={post.seq} seq={post.seq} uname={post.uname} title={post.title} desc={post.desc} key={post.seq} />
                                     }) : ""
                                 }
@@ -153,3 +161,4 @@ function HomePage() {
     }
 }
 export default HomePage
+

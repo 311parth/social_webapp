@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useContext } from "react";
+import React, { useState, useRef, useEffect, useContext ,memo } from "react";
 import { UsernameContext } from "./pages/HomePage";
 import { Link } from "react-router-dom";
 import FetchError from "./FetchError";
@@ -16,21 +16,22 @@ function setFill(element) {
     }
 }
 
-var fetchNow = 0;
+var refreshed = 0;
+var temp;
 
 function Post(props) {
-
     const navigate = useNavigate();
     const location = useLocation();
+
     const [interaction, setInteraction] = useState(() => {
         // console.log("setting interaction only once")
         return { like: 0, dislike: 0 };
     });
+    
     const [comments, setComments] = useState([]);
-
-
+    
     const usernameDefault = useContext(UsernameContext);
-
+    // console.log(usernameDefault,"co")
     var interactionData = {};
     let username = useRef();
     let isliked = useRef(0);
@@ -64,7 +65,6 @@ function Post(props) {
         } else {
             // username = usernameDefault;
             username.current = usernameDefault;
-
         }
 
         //setting style for liked and disliked based on props
@@ -87,6 +87,7 @@ function Post(props) {
         function fetchIt() {
             // console.log("fetch",username.current)
             //fetching interactions
+
             fetch("/api/interaction/" + props.seq, {
                 method: "GET",
                 headers: {
@@ -122,6 +123,7 @@ function Post(props) {
                     // document.getElementById("post-header-profile-img").src = `http://localhost:8080/profile/profileImg/${username}`
                 });
 
+
             //fetching comments
             fetch("/api/post/comment/" + props.seq, {
                 method: "GET",
@@ -138,6 +140,8 @@ function Post(props) {
 
             //setting temp variable to 1 for first fetch 
             isFirstFetch.current = 1;
+            refreshed = 1;
+
         }
 
         // fetchIt();
@@ -237,74 +241,34 @@ function Post(props) {
         }
     };
 
-    const isfetch = useRef(tempIsFetch);
-    const [fetchNow, setFetchNow] = useState(0);
     useEffect(() => {
-        // console.log("refetched")
-        if (!isfetch.current) {
-            // your API call func
-            // console.log("u")
-            fetch("/api/interaction/" + props.seq, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                credentials: "include",
-            })
-                .then((response) => response.json())
-                .then(async (data) => {
-                    interactionData = data;
-                    // console.log(interactionData.liked_uname.includes(username.current),interactionData)
-                    setInteraction({
-                        like: interactionData.like,
-                        dislike: interactionData.dislike,
-                    });
-                    var liked_uname = interactionData.liked_uname;
-                    var disliked_uname = interactionData.disliked_uname;
-
-                    const like_element = document.getElementById(
-                        "material-symbols-outlined-like-" + props.id
-                    );
-                    const dislike_element = document.getElementById(
-                        "material-symbols-outlined-dislike-" + props.id
-                    );
-
-                    //if two page is concurrently open then updating interactions:
-                    if (liked_uname.includes(username.current)) {
-                        like_element.classList.add("fill-1");
-                        like_element.style =
-                            " font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 48";
-                    } else {
-                        if (like_element.classList.contains("fill-1")) {
-                            like_element.classList.remove("fill-1");
-                            like_element.style =
-                                " font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 48";
-                        }
-                    }
-                    if (disliked_uname.includes(username.current)) {
-                        dislike_element.classList.add("fill-1");
-                        dislike_element.style =
-                            " font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 48";
-                    } else {
-                        if (dislike_element.classList.contains("fill-1")) {
-                            dislike_element.classList.remove("fill-1");
-                            dislike_element.style =
-                                " font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 48";
-                        }
-                    }
-                });
-        }
-
-        isfetch.current = true;
-        tempIsFetch = true;
-    }, [fetchNow]);
-
-    setTimeout(() => {
-        isfetch.current = false;
-        if (fetchNow === 0) setFetchNow(1);
-        else setFetchNow(0);
-
-    }, 10000);
+        setInterval(() => {
+            // console.log(interaction)
+            // console.count("refresh")
+                    fetch("/api/interaction/" + props.seq, {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        credentials: "include",
+                    })
+                        .then((response) => response.json())
+                        .then(async (data) => {
+                            interactionData = data;
+                            temp = {
+                                like: interactionData.like,
+                                dislike : interactionData.dislike
+                            }
+                            if(temp!==interaction){
+                                setInteraction({
+                                    like: data.like,
+                                    dislike: data.dislike,
+                                });
+                            }
+                        });
+                        // console.count("update called")
+        }, 10000);//refresh interaction count after x amount of seconds 
+    }, [])
     const num = 0;
 
     const submitComment = (e) => {
@@ -313,7 +277,6 @@ function Post(props) {
         var commentPostBody = {
             comment: postCommentInput.value
         }
-
         fetch("/api/post/comment/" + props.seq, {
             method: "POST",
             headers: {
@@ -324,13 +287,12 @@ function Post(props) {
         })
             .then((response) => response.json())
             .then(async (data) => {
-                console.log(data)
+                // console.log(data)
             })
         postCommentInput.value = "";
     }
 
     const postClicked = (e) => {
-    
             // console.log(location)
             //if the post is on home page then only onclick, to avoid nested click on post components
             if (location.pathname === "/home") {
@@ -350,8 +312,10 @@ function Post(props) {
 
     var i = 0;
     // console.log("isliked : ",isliked,"isdisliked:",isdisliked)
+    // console.log(interaction,count++)
     return (
         <>
+        {/* {console.log(interaction,count++)} */}
             <div className="post-container" >
                 <div className="post-main">
                     {/* TODO: add link on click to navigate to profile page for below div */}
@@ -435,12 +399,10 @@ function Post(props) {
                             </div>
                         </>
                         : ""}
-
-
                 </div>
             </div>
         </>
     );
 }
 
-export default Post;
+export default memo(Post)

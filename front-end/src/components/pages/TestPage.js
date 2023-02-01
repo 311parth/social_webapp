@@ -17,12 +17,16 @@ function TestPage() {
     })
     socket.on("hello",(args)=>{
         console.log(args)
-        socket.emit("helloback","o00")
     })
-    socket.emit("reqInteraction",27);
-    socket.on("resInteraction",(args)=>{
-        console.log("res:",args);
-    })
+    
+    // setInterval(() => {
+    //     socket.emit("reqInteraction",27);
+    //     socket.once("resInteraction",(args)=>{
+    //         console.log("res:",args);
+    //     })
+    // }, 5000);
+
+
     // window.onclick = (e)=>{
     //     const modal  = document.getElementById("modal")
     //     const modalOpen = document.getElementById("modal-open");
@@ -58,7 +62,15 @@ function TestPage() {
     // socket.on("hello",(args)=>{
     //     console.log(args);
     // })
+    var reqPostID = 27;
     const socketConnect=()=>{
+        console.log("hn")
+        socket.emit("reqInteraction",reqPostID);
+        socket.once("resInteraction",(args)=>{
+            console.log("res:",args);
+        })
+        
+        
     //     console.log(socket)
     //     console.log(socket.id)
     //     fetch('/socket')

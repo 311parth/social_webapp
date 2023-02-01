@@ -1,4 +1,5 @@
 import  './main.css'
+
 import { BrowserRouter, Routes, Route , Link} from "react-router-dom";
 import HomePage from './components/pages/HomePage';
 import SignupPage from './components/pages/SignupPage';
@@ -11,6 +12,7 @@ import TestPage from './components/pages/TestPage';
 import PostViewPage from './components/pages/PostViewPage';
 function App() {
 
+  console.log("App.js")
   return (
     <BrowserRouter>
         <Routes>

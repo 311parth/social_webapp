@@ -147,6 +147,8 @@ router
   .get(authenticateToken, async (req, res) => {
     const username = getLoggedUser(req.cookies.secret, req.cookies.uname);
     const loggedUserData = await getLoggedUserData(username);
+    console.log("post req for homepage feed",username," => ",new Date().toUTCString());
+
     // console.log(loggedUserData)
     if( loggedUserData[0]){
       var followingUsers = loggedUserData[0].following;
@@ -212,7 +214,7 @@ router
 
 router.route("/interaction/:id").get(authenticateToken, async (req, res) => {
   // console.log("interaction get req got ",req.params.id)
-  console.log(req.params.id," => ",new Date().toUTCString());
+  // console.log(req.params.id," => ",new Date().toUTCString());
 
   const username = getLoggedUser(req.cookies.secret, req.cookies.uname);
 

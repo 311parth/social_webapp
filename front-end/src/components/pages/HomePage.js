@@ -23,6 +23,7 @@ function HomePage() {
         post:[],
         newPost : [],
     });
+    const [getPost,setGetPost] = useState(0);
 
 
 
@@ -114,8 +115,51 @@ function HomePage() {
                 }))
             })
         }
-        
     }, [followingChange])
+
+    useEffect(() => {
+        //fetching posts
+        if(getPost===0)return;//just to avoid  refetch in intial load case
+        // console.log("called")
+            fetch("/api/post", {
+                method: "GET",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: "include",
+            }).then((res) => {
+                if (res.ok) return res.json();
+                else res.json({ "isok": 0 })
+            })
+            .then(async (data) => {
+                // console.log(data)
+                // console.count("getPost")
+                await setState((prev) => ({
+                    ...prev,
+                    post: [...prev.post, ...data]
+                  }));
+            })
+      }, [getPost]);
+    
+    const handelInfiniteScroll = async () => {
+        // console.log("scroll")
+          if (window.innerHeight + document.documentElement.scrollTop + 1 >=document.documentElement.scrollHeight ) {
+            // console.log("bottom hit")
+            setGetPost((prev)=>!prev)
+          }
+      };
+      const setScrollEvent = ()=>{
+        window.addEventListener("scroll", handelInfiniteScroll);
+      }
+      useEffect(() => {
+        setScrollEvent();
+        return () => window.removeEventListener("scroll", handelInfiniteScroll);
+//The return statement inside a useEffect hook is called a "cleanup function." It's executed just before the component unmounts and before the next useEffect hook runs.
+// In this case, the return statement inside the useEffect hook is used to remove the scroll event listener before the component unmounts. 
+// This is necessary to prevent memory leaks by ensuring that there are no unnecessary event listeners left in the DOM after the component has been unmounted.
+      }, []);
+
+      
 
 
     if (errorMsg === 1) {

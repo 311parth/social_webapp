@@ -29,7 +29,6 @@ function Post(props) {
     });
     
     const [comments, setComments] = useState([]);
-    
     const usernameDefault = useContext(UsernameContext);
     // console.log(usernameDefault,"co")
     var interactionData = {};
@@ -156,7 +155,7 @@ function Post(props) {
             })
         }
     }, []);
-
+    
     // TODO: add post like button fill or unfill at  first load
     // TODO: add like count
     // TODO:  add like or dislike only one at a time
@@ -310,6 +309,7 @@ function Post(props) {
 
     }
 
+  
     var i = 0;
     // console.log("isliked : ",isliked,"isdisliked:",isdisliked)
     // console.log(interaction,count++)

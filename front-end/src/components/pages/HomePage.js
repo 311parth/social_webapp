@@ -4,6 +4,8 @@ import Post from '../Post'
 import Sidebar from '../Sidebar'
 import { useEffect, useState ,createContext,useContext ,useRef} from 'react'
 import FetchError from '../FetchError'
+import LoadingSpinner from '../LoadingSpinner'
+import PostFeedEnd from './PostFeedEnd'
 export const UsernameContext = createContext();
 export const FollowingChangeContext = createContext();
 
@@ -24,8 +26,9 @@ function HomePage() {
         newPost : [],
     });
     const [getPost,setGetPost] = useState(0);
-
-
+    const [loading,setLoading] = useState(0);
+    const isEnd = useRef(0);
+    const lastPostSeq = useRef(-1);
 
     useEffect(() => {
         fetch("/api/get_username", {
@@ -59,7 +62,7 @@ function HomePage() {
     
             
             //fetching posts
-            fetch("/api/post", {
+            fetch(`/api/post?seq=${lastPostSeq.current}`, {
                 method: "GET",
                 headers: {
                     'Content-Type': 'application/json'
@@ -69,7 +72,9 @@ function HomePage() {
                 if (res.ok) return res.json();
                 else res.json({ "isok": 0 })
             })
-                .then(async (data) => {
+            .then(async (data) => {
+                    // console.log(data[data.length-1].seq)
+                    lastPostSeq.current=data[data.length-1].seq;
                     // await setPost(data)
                     await setState({
                         post : data,
@@ -120,8 +125,7 @@ function HomePage() {
     useEffect(() => {
         //fetching posts
         if(getPost===0)return;//just to avoid  refetch in intial load case
-        // console.log("called")
-            fetch("/api/post", {
+            fetch(`/api/post?seq=${lastPostSeq.current}`, {
                 method: "GET",
                 headers: {
                     'Content-Type': 'application/json'
@@ -132,21 +136,30 @@ function HomePage() {
                 else res.json({ "isok": 0 })
             })
             .then(async (data) => {
-                // console.log(data)
-                // console.count("getPost")
+                // console.log(data)//TODO: fix : fetch is called twice when bottom hits
+                if(!data[0]){
+                    //TODO: fix when post count is between 0 and n ex. maximum post server send is 8 but remaining post is 1 to 7  then set isend to 1
+                    isEnd.current=1;
+                    return
+                };
+                lastPostSeq.current=data[data.length-1].seq
                 await setState((prev) => ({
                     ...prev,
                     post: [...prev.post, ...data]
                   }));
+                setLoading(0);
             })
       }, [getPost]);
     
     const handelInfiniteScroll = async () => {
-        // console.log("scroll")
-          if (window.innerHeight + document.documentElement.scrollTop + 1 >=document.documentElement.scrollHeight ) {
-            // console.log("bottom hit")
+        if(isEnd.current){
+            setLoading(0);
+            return;
+        }
+        if(window.innerHeight + document.documentElement.scrollTop + 1 >=document.documentElement.scrollHeight ) {
+            setLoading(1);
             setGetPost((prev)=>!prev)
-          }
+        }
       };
       const setScrollEvent = ()=>{
         window.addEventListener("scroll", handelInfiniteScroll);
@@ -158,7 +171,6 @@ function HomePage() {
 // In this case, the return statement inside the useEffect hook is used to remove the scroll event listener before the component unmounts. 
 // This is necessary to prevent memory leaks by ensuring that there are no unnecessary event listeners left in the DOM after the component has been unmounted.
       }, []);
-
       
 
 
@@ -172,6 +184,7 @@ function HomePage() {
             // console.log(username,post)
             return (
                 <>
+
                     <UsernameContext.Provider value={username.current} >
                         {errorMsg === 1 ? <h1>Wrong Username,Password</h1> : ""}
                         <Navbar/>
@@ -190,6 +203,11 @@ function HomePage() {
                                 <Sidebar/>
                             </FollowingChangeContext.Provider>
                         </div>
+                        {/* {isEnd.current ?<>
+                            <p>Posts ended</p>
+                        </>: ""} */}
+                        {isEnd.current ? <PostFeedEnd/> :""}
+                        {loading ? <LoadingSpinner/> : "" }
                     </UsernameContext.Provider>
                 </>
             )

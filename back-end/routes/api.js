@@ -145,33 +145,36 @@ router
 
 
   .get(authenticateToken, async (req, res) => {
+    console.log(req.query);
+    var lastSeq = req.query.seq;
+    if(req.query.seq<0)lastSeq=Number.MAX_SAFE_INTEGER;
     const username = getLoggedUser(req.cookies.secret, req.cookies.uname);
     const loggedUserData = await getLoggedUserData(username);
-    console.log("post req for homepage feed",username," => ",new Date().toUTCString());
-
+    // console.log("post req for homepage feed",username," => ",new Date().toUTCString());
+      
+      if( loggedUserData[0]){
+        var followingUsers = loggedUserData[0].following;
+        await postModel
+          .find({ uname: { $in: followingUsers },seq:{$lt : lastSeq} }, { _id: 0, time: 0, __v: 0 })
+          .sort({ seq: -1 })
+          .limit(8)
+          .clone()
+          .exec(async (err, result) => {
+            if (err) {
+              res.sendStatus(500);
+              return;
+            }
+            if (result) {
+              await res.send(result);
+            } else {
+              return res.status("404").json({ err });
+            }
+          });
+      }
+      else{
+        return res.json([])
+      }
     // console.log(loggedUserData)
-    if( loggedUserData[0]){
-      var followingUsers = loggedUserData[0].following;
-      await postModel
-        .find({ uname: { $in: followingUsers } }, { _id: 0, time: 0, __v: 0 })
-        .sort({ seq: -1 })
-        .limit(20)
-        .clone()
-        .exec(async (err, result) => {
-          if (err) {
-            res.sendStatus(500);
-            return;
-          }
-          if (result) {
-            await res.send(result);
-          } else {
-            return res.status("404").json({ err });
-          }
-        });
-    }
-    else{
-      return res.json([])
-    }
   });
 
   router.route("/post/latest/:username").get(authenticateToken,(req,res)=>{

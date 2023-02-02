@@ -672,3 +672,9 @@ footer a{
 .back-icon {
     font-size: 2rem !important;
 }
+
+.loading-spinner{
+    display: block;
+    margin: auto;
+    width: 3rem;
+}

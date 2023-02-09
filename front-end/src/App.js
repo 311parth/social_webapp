@@ -12,7 +12,6 @@ import TestPage from './components/pages/TestPage';
 import PostViewPage from './components/pages/PostViewPage';
 function App() {
 
-  console.log("App.js")
   return (
     <BrowserRouter>
         <Routes>

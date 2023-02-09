@@ -27,9 +27,9 @@ function HomePage() {
     });
     const [getPost,setGetPost] = useState(0);
     const [loading,setLoading] = useState(0);
-    const isEnd = useRef(0);
+    const isPostFeedEnd = useRef(0);
     const lastPostSeq = useRef(-1);
-
+    const isFetchedAllready = useRef(0);
     useEffect(() => {
         fetch("/api/get_username", {
             method: 'GET',
@@ -74,7 +74,7 @@ function HomePage() {
             })
             .then(async (data) => {
                     // console.log(data[data.length-1].seq)
-                    lastPostSeq.current=data[data.length-1].seq;
+                    if(data && data[data.length-1])lastPostSeq.current=data[data.length-1].seq;
                     // await setPost(data)
                     await setState({
                         post : data,
@@ -125,6 +125,8 @@ function HomePage() {
     useEffect(() => {
         //fetching posts
         if(getPost===0)return;//just to avoid  refetch in intial load case
+        isFetchedAllready.current=1;//this flag=1  to indicate that fetching is in process and  post is beign rendered (avoid immediate re-fetch)
+
             fetch(`/api/post?seq=${lastPostSeq.current}`, {
                 method: "GET",
                 headers: {
@@ -136,26 +138,37 @@ function HomePage() {
                 else res.json({ "isok": 0 })
             })
             .then(async (data) => {
-                // console.log(data)//TODO: fix : fetch is called twice when bottom hits
+                // console.log(data)
+
+                //TODO: fix : fetch is called twice when bottom hits
+                //DONE: solution of above TODO is IsFetchedAllready flag
                 if(!data[0]){
-                    //TODO: fix when post count is between 0 and n ex. maximum post server send is 8 but remaining post is 1 to 7  then set isend to 1
-                    isEnd.current=1;
+                    isPostFeedEnd.current=1;
                     return
                 };
                 lastPostSeq.current=data[data.length-1].seq
                 await setState((prev) => ({
                     ...prev,
                     post: [...prev.post, ...data]
-                  }));
+                }));
+
+
+                //TODO: fix when post count is between 0 and n ex. maximum post server send is 8 but remaining post is 1 to 7  then set isPostFeedEnd to 1
+                //DONE: below condition check TODO: make dynamic number of post for below condition
+                if(data.length!==8)isPostFeedEnd.current=1;
+                
+
+                isFetchedAllready.current=0;//this flag=0  to indicate that fetching is done post is rendered (avoid immediate re-fetch)
                 setLoading(0);
             })
       }, [getPost]);
     
     const handelInfiniteScroll = async () => {
-        if(isEnd.current){
+        if(isPostFeedEnd.current){//if the post feed is ended then remove loading 
             setLoading(0);
             return;
         }
+        if(isFetchedAllready.current)return;//here checking if isFetchedAllready is 1 then immediate re-fetch ( bottom touch twice immediatlly) req made 
         if(window.innerHeight + document.documentElement.scrollTop + 1 >=document.documentElement.scrollHeight ) {
             setLoading(1);
             setGetPost((prev)=>!prev)
@@ -198,16 +211,13 @@ function HomePage() {
                                     return <Post id={post.seq} seq={post.seq} uname={post.uname} title={post.title} desc={post.desc} key={post.seq} />
                                     }) : ""
                                 }
+                                {isPostFeedEnd.current ? <PostFeedEnd/> :""}
+                                {loading ? <LoadingSpinner/> : "" }
                             </div>
                             <FollowingChangeContext.Provider value={{followingChange,setFollowingChange}}>
                                 <Sidebar/>
                             </FollowingChangeContext.Provider>
                         </div>
-                        {/* {isEnd.current ?<>
-                            <p>Posts ended</p>
-                        </>: ""} */}
-                        {isEnd.current ? <PostFeedEnd/> :""}
-                        {loading ? <LoadingSpinner/> : "" }
                     </UsernameContext.Provider>
                 </>
             )

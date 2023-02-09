@@ -233,7 +233,6 @@ footer a{
     border-radius: 10px 25px;
     font-family: 'Ubuntu', sans-serif;
     font-size: 0.9rem;
-    
     /* background-color: #E63E6D;  */
 }
 
@@ -244,6 +243,7 @@ footer a{
     font-size: 1.2rem;
     color: #E63E6D;
     padding-left: 0.3rem;
+    text-decoration: none;
 }
 
 .post-title{
@@ -425,6 +425,9 @@ footer a{
     font-family: 'Ubuntu', sans-serif;
     cursor: pointer;
 }
+.unfollow-btn{
+    margin-left: 1rem;
+}
 .follow-btn:hover{
     border: 2px solid #252A34;
     color: #E63E6D;
@@ -521,12 +524,10 @@ footer a{
         flex-direction: column;
         align-items: center;
     }
-    .post-header{
-        margin-left: 20%;
-    }
-    
 }
-
+.sidebar-username{
+    margin-bottom : 0.3rem;
+}
 #preloader{
     background:black url("../public/preloader.gif") no-repeat center center;
     background-size:10rem;

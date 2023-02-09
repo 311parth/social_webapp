@@ -145,7 +145,7 @@ router
 
 
   .get(authenticateToken, async (req, res) => {
-    console.log(req.query);
+    // console.log(req.query);
     var lastSeq = req.query.seq;
     if(req.query.seq<0)lastSeq=Number.MAX_SAFE_INTEGER;
     const username = getLoggedUser(req.cookies.secret, req.cookies.uname);
@@ -361,6 +361,88 @@ router.route("/follow").post(async (req, res) => {
   });
   // res.json({"isok":0})
 });
+
+//to check if user1 follows user2 or not
+router.route("/isfollowing").post(async (req,res)=>{
+  const username=req.body.username;
+  const isfollowUsername=req.body.isfollowUsername;
+  await followersModel.findOne({username:username},(err,result)=>{
+    if(err)throw err;
+    if(result){
+      // console.log(result);  
+      if(result.following.includes(isfollowUsername))
+        res.json({"isfollowing":1})
+      else res.json({"isfollowing":0})
+    }
+  }).clone()
+})
+
+router.route("/get_following").post(async(req,res)=>{
+    // const username=req.body.username;
+    const username = getLoggedUser(req.cookies.secret,req.cookies.uname);
+    // console.log(username)
+      await followersModel.findOne({username:username},(err,result)=>{
+          if(err)throw err;
+          if(result){
+            // console.log(result.following);
+            res.json(result.following);
+            // res.json({"isok":1})
+          }else{
+            res.json({"isok":0});
+          }
+      }).clone();
+  
+})
+router.route("/unfollow").post(async (req, res) => {
+  // console.log(req.body)
+  const username = req.body.username;
+  const unfollowedUsername = req.body.unfollowedUsername;
+  if(!username || !unfollowedUsername || username===unfollowedUsername )res.json({"isok":0});
+  // console.log(req.body)
+  followersModel.findOne({ username: username }, async (err, result) => {
+    if (err) throw err;
+    if (result) {
+      if (!result.following.includes(unfollowedUsername)) {//when unfollowed button click twice or follow via unfollow api call 
+        //adding unfollowed username to following array
+        result.following = [...result.following, unfollowedUsername];
+        await result.save();
+        //adding follower user to followed account 
+        followersModel.findOne({username:unfollowedUsername},async (followerErr,followerResult)=>{
+          if(followerErr)throw followerErr;
+          if(followerResult){
+            if(!followerResult.followers.includes(username)){
+              followerResult.followers = [...followerResult.followers,username];
+              await followerResult.save();
+            }
+          }
+        })
+        //it means now user is  following so button text will be following
+        res.json({ isok: 1, msg: "UnFollow" ,"follow":1});
+      } else {//when unfollow button clicked
+        result.following = result.following.filter(
+          (username) => username !== unfollowedUsername
+        );
+        await result.save().then(() => {
+        
+          //removing follower user to unfollowed account 
+          followersModel.findOne({username:unfollowedUsername},async(followerErr,followerResult)=>{
+            if(followerErr)throw followerErr;
+            if(followerResult){
+              followerResult.followers = followerResult.followers.filter(
+                (followingUsername)=>followingUsername!== username
+              )
+              await followerResult.save();
+            }
+          })
+          //it means now user is not following so button text will be follow
+          res.json({ isok: 1, msg: "Follow" ,"follow":0});
+        });
+      }
+      // console.log(result);
+    }
+  });
+  // res.json({"isok":0})
+});
 router.route("/random/followcard/").post(async (req, res) => {
   const username = req.body.username;
   // const loggedUserData = await getLoggedUserData(username);
@@ -488,7 +570,7 @@ router.route("/post/comment/:seq").get(authenticateToken,async(req,res)=>{
       }).save();
     }
   })
-  res.json({"isok":1})
+  res.json({"isPosted":1})
 })
 
 

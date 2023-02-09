@@ -18,6 +18,8 @@ function TestPage() {
     socket.on("hello",(args)=>{
         console.log(args)
     })
+
+
     
     // setInterval(() => {
     //     socket.emit("reqInteraction",27);
@@ -112,6 +114,7 @@ function TestPage() {
                     </div>
                 </div>
             </div> */}
+
         </>
     )
 }

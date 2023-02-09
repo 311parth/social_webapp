@@ -22,9 +22,9 @@ const postAuthentication = async(req,res,next)=>{
     })
 
 }
-router.route("/image/post/:username/:seq").get(authenticateToken,postAuthentication,async(req, res) => {
-    try {
-        
+router.route("/image/post/:username/:seq").get(authenticateToken,async(req, res) => {
+    //add postAuthentication middleware  if only follwers can access any post 
+    try {   
         await postModel.findOne({seq:req.params.seq},async(err,result)=>{
             if(err)throw err;
             if(result && result.img && result.img.contentType){//here must have to check result.img.contentType

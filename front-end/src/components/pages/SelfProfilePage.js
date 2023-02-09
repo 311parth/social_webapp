@@ -138,10 +138,9 @@ function SelfProfilePage(props) {
                             height:"fit-content"
                             }}>
                             <span className="sidebar-header-text">
-                                Account you may like to follow
+                                Following
                             </span>
                             <div className="sidebar-main-card-container">
-
                                 {
                                     usernameArray.map((value,i)=>{
                                         return <FollowingList key={i.toString()}  username={value} imgsrc={`http://localhost:8080/profile/profileImg/${value}`} />

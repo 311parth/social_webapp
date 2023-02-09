@@ -1,5 +1,6 @@
 import React,{useContext} from 'react'
 import {UsernameContext,FollowingChangeContext} from "./pages/HomePage"
+import { Link } from "react-router-dom";
 
 function SidebarFollowCard(props) {
     //TODO: do not show username that already followed at first load
@@ -51,7 +52,8 @@ function SidebarFollowCard(props) {
             <div className="sidebar-img">
                 <img src={props.imgsrc} loading="lazy" alt=""/>
             </div>
-            <span>@{props.username}</span>
+            {/* <span>@{props.username}</span> */}
+            <Link to={`/user?username=${props.username}`} className="sidebar-username">@{props.username}</Link>
             <button className="follow-btn" id={"follow-button-"+props.id} type="button" onClick={follow} >Follow</button>
         </div>
     )

@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import FetchError from "./FetchError";
 import { useNavigate } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
-
+import {unfollow} from "../helper/unfollow.eventlistener"
 var tempIsFetch = false;
 function setFill(element) {
     if (element.classList.contains("fill-1")) {
@@ -37,17 +37,17 @@ function Post(props) {
     let isdisliked = useRef(0);
     let ishome = useRef(0);
     let isFirstFetch = useRef(0);
-    if (window.location.pathname === "/home") {
+    let isProfilePage=useRef(0);
+    if (window.location.pathname === "/home")
         ishome.current = 1;
-    } else {
-        ishome.current = 0;
-    }
+    else ishome.current = 0;
+    if(window.location.pathname==="/profile")
+        isProfilePage.current=1;
+    else isProfilePage.current=0;
 
-    // console.log(window.location.pathname)
-    useEffect(() => {
-        // console.log(window.location)
+    useEffect(() => { 
         if (window.location.pathname != "/home") {
-            // console.log("username fetching")
+            // username.current=data
             fetch("/api/get_username", {
                 method: "GET",
                 headers: {
@@ -154,6 +154,9 @@ function Post(props) {
                 element.outerHTML = "";
             })
         }
+
+        
+
     }, []);
     
     // TODO: add post like button fill or unfill at  first load
@@ -287,6 +290,12 @@ function Post(props) {
             .then((response) => response.json())
             .then(async (data) => {
                 // console.log(data)
+                if(data.isPosted){//setting comment after succesfull response 
+                    setComments((prev)=>[...prev,{
+                        username:username.current,
+                        comment: commentPostBody.comment
+                    }])
+                }
             })
         postCommentInput.value = "";
     }
@@ -309,6 +318,8 @@ function Post(props) {
 
     }
 
+    // newFunction(username, props);
+    
   
     var i = 0;
     // console.log("isliked : ",isliked,"isdisliked:",isdisliked)
@@ -338,6 +349,9 @@ function Post(props) {
                             {" "}
                             {"@" + props.uname}
                         </Link>
+                    {/* if current page is profile page then don't display unfollow button */}
+                    {!isProfilePage.current ? <button className="follow-btn unfollow-btn" id={"unfollow-button-"+props.id} type="button"   onClick={()=>unfollow(username.current,props.uname,props.id)}>UnFollow</button> : ""}
+                    {/* TODO: add filter after unfollowing  */}
                     </div>
                     <div className="post-body" id={`post-main-${props.seq}`} onClick={(e) => { postClicked(e) }} >
                         <div className="post-text-container">
@@ -406,3 +420,6 @@ function Post(props) {
 }
 
 export default memo(Post)
+
+
+

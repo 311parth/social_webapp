@@ -11,16 +11,16 @@ function SelfProfilePage(props) {
     
     // console.log("u", username);
    
-    const [post, setPost] = useState([]);
-    const [usernameArray,setUsernameArray] = useState([]);
+    const [post, setPost] = useState();
+    const [usernameArray,setUsernameArray] = useState();
 
     useEffect(() => {
-        const usernamePromise = new Promise((resolve,reject)=>{
-            if(navState.state && username.current){
+        const loadProfilePage =async ()=>{
+            if((navState && navState.state&& navState.state.username) || username.current){
                 username.current = navState.state.username;
-                resolve();
             }else{
-                fetch("/api/get_username", {
+
+                await fetch("/api/get_username", {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -30,13 +30,10 @@ function SelfProfilePage(props) {
                     .then((data) => {
                         // console.log(data)
                         username.current= data.username;
-                        resolve();
                 })
             }
-        })
-        usernamePromise.then(()=>{
             //fetching posts
-            fetch(`/api/profile/post/${username.current}`, {
+            await fetch(`/api/profile/post/${username.current}`, {
                 method: "GET",
                 headers: {
                     'Content-Type': 'application/json'
@@ -52,7 +49,7 @@ function SelfProfilePage(props) {
                 })
     
             //fetching following 
-            fetch(`/api/profile/${username.current}/following`,{
+            await fetch(`/api/profile/${username.current}/following`,{
                 method:"GET",
                 headers:{
                     'Content-Type' : 'application/json'
@@ -63,7 +60,8 @@ function SelfProfilePage(props) {
             .then((data)=>{
                 setUsernameArray(data)
             })
-        })
+        }
+        loadProfilePage();
     }, [])
 
     function uploadProfileImg() {
@@ -93,7 +91,7 @@ function SelfProfilePage(props) {
     }
     
     // console.log(username)
-    if(usernameArray){
+    if(usernameArray && username.current && post){
         return (
             <>
                 <Navbar />

@@ -10,19 +10,23 @@ function PostViewPage() {
     const location  =  useLocation();
     // console.log(location.state)
     const state = location.state;
-        return (
-        <>
-                <button onClick={()=>{navigate(-1)}} className="back-btn">
-                    <span className="material-symbols-outlined back-icon">
-                        arrow_back
-                    </span>
-                    <span>Back</span>
-                </button>
-
-            <Post id={state.seq} seq={state.seq} uname={state.uname} title={state.title} desc={state.desc} key={state.seq} isliked={location.state.isliked} isdisliked={location.state.isdisliked}/>
-            {/* <Post/>  */}
-        </>
-    )
+        if(state){
+            return (
+            <>
+                    <button onClick={()=>{navigate(-1)}} className="back-btn">
+                        <span className="material-symbols-outlined back-icon">
+                            arrow_back
+                        </span>
+                        <span>Back</span>
+                    </button>
+    
+                <Post id={state.seq} seq={state.seq} uname={state.uname} title={state.title} desc={state.desc} key={state.seq} isliked={location.state.isliked} isdisliked={location.state.isdisliked}/>
+                {/* <Post/>  */}
+            </>
+        )
+    }else{
+        return <FetchError/>
+    }
 }
 
 export default PostViewPage

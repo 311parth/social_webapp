@@ -6,10 +6,8 @@ function SidebarFollowCard(props) {
     //TODO: do not show username that already followed at first load
     const username = useContext(UsernameContext);//logged username 
     const followingChange = useContext(FollowingChangeContext);
-    // console.log(followingChange)
-
-
-    function follow(params) {
+    const linkUrl = `/user?username=${props.username}`;
+    function follow() {
         var body = {
             username : username,
             followedUsername : props.username
@@ -24,10 +22,8 @@ function SidebarFollowCard(props) {
         })
         .then((res)=>{return res.json()})
         .then((data)=>{
-            // console.log(data,typeof(data))
             if(data.isok ===1)
             {
-                // console.log("h")
                 document.getElementById("follow-button-"+props.id).innerText = data.msg;
                 if(data.follow===1){
                     //this means that logged user is now follwoing props.username
@@ -45,15 +41,12 @@ function SidebarFollowCard(props) {
             }
         });
     }
-
-
     return (
         <div className="follow-card">
             <div className="sidebar-img">
                 <img src={props.imgsrc} loading="lazy" alt=""/>
             </div>
-            {/* <span>@{props.username}</span> */}
-            <Link to={`/user?username=${props.username}`} className="sidebar-username">@{props.username}</Link>
+            <Link to={linkUrl} className="sidebar-username">@{props.username}</Link>
             <button className="follow-btn" id={"follow-button-"+props.id} type="button" onClick={follow} >Follow</button>
         </div>
     )

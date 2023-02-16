@@ -30,6 +30,7 @@ function HomePage() {
     const isPostFeedEnd = useRef(0);
     const lastPostSeq = useRef(-1);
     const isFetchedAllready = useRef(0);
+    const [usernameFlag,setUsernameFlag] = useState(0);
     useEffect(() => {
         fetch("/api/get_username", {
             method: 'GET',
@@ -41,6 +42,7 @@ function HomePage() {
             .then((data) => {
                 // setUsername(data.username)
                 username.current = data.username;
+                setUsernameFlag(1);
             })
 
             //fetching if user is logged or not

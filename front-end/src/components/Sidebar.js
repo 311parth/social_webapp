@@ -7,6 +7,7 @@ function Sidebar(props) {
   const username = useContext(UsernameContext);
   const [usernameArray, setUsernameArray] = useState();
   let urlHostname= window.location.host;
+  const backendurl = process.env.REACT_APP_BACKENDURL;
 
   useEffect(() => {
     // console.log(username)
@@ -44,7 +45,7 @@ function Sidebar(props) {
               // console.log(key,value,typeof(key),typeof(value));
               <SidebarFollowCard
                 key={key}
-                imgsrc={`http://${urlHostname.replace("3000","8080")}/profile/profileImg/${value}`}
+                imgsrc={`http://${backendurl}/profile/profileImg/${value}`}
                 username={value}
                 id={key}
               />

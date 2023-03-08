@@ -8,8 +8,9 @@ function SelfProfilePage(props) {
     let navState = useLocation();
     // console.log(navState)
     let username = useRef();
-    
+
     // console.log("u", username);
+  const backendurl = process.env.REACT_APP_BACKENDURL;
    
     const [post, setPost] = useState();
     const [usernameArray,setUsernameArray] = useState();
@@ -77,7 +78,7 @@ function SelfProfilePage(props) {
             .then((data) => {
                 // console.log(data);
                 //must fetch it once to make sure that image exist on that route
-                fetch(`http://localhost:8080/profile/profileImg/${username.current}`, {
+                fetch(`http://${backendurl}/profile/profileImg/${username.current}`, {
                     method: "GET",
                 })
                     .then((res) => res)
@@ -86,7 +87,7 @@ function SelfProfilePage(props) {
                     });
                 document.getElementById(
                     "img-main"
-                ).src = `http://localhost:8080/profile/profileImg/${username.current}`;
+                ).src = `http://${backendurl}/profile/profileImg/${username.current}`;
             });
     }
     
@@ -98,7 +99,7 @@ function SelfProfilePage(props) {
                 <div className="profile-header-container">
                     <div>
                         <h3 className="profile-header-username">@{username.current}</h3>
-                        <img  src={`http://localhost:8080/profile/profileImg/${username.current}`} alt="" id="img-main" loading="lazy" width="50" height="50" style={{borderRadius: "50%",}}/>
+                        <img  src={`http://${backendurl}/profile/profileImg/${username.current}`} alt="" id="img-main" loading="lazy" width="50" height="50" style={{borderRadius: "50%",}}/>
                     </div>
                     <div>
                         <form >
@@ -141,7 +142,7 @@ function SelfProfilePage(props) {
                             <div className="sidebar-main-card-container">
                                 {
                                     usernameArray.map((value,i)=>{
-                                        return <FollowingList key={i.toString()}  username={value} imgsrc={`http://localhost:8080/profile/profileImg/${value}`} />
+                                        return <FollowingList key={i.toString()}  username={value} imgsrc={`http://${backendurl}/profile/profileImg/${value}`} />
                                     })
                                 }
                             </div>

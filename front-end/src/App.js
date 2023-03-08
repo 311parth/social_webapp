@@ -25,7 +25,6 @@ function App() {
           <Route path="/logout" element={<LogoutPage/>}></Route>
           <Route path="/profile" element={<SelfProfilePage/>}></Route>
           <Route path="/user" element={<ProfilePage/>}></Route>
-          <Route path="/user" element={<ProfilePage/>}></Route>
           <Route path="/test" element={<TestPage/>}></Route>
           <Route path="home/post/view/:id" element={<PostViewPage/>}></Route>
 

@@ -3,6 +3,7 @@ import {UsernameContext,FollowingChangeContext} from "./pages/HomePage"
 import { Link } from "react-router-dom";
 
 function SidebarFollowCard(props) {
+
     //TODO: do not show username that already followed at first load
     const username = useContext(UsernameContext);//logged username 
     const followingChange = useContext(FollowingChangeContext);

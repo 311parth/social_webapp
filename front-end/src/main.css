@@ -685,3 +685,7 @@ footer a{
     margin: auto;
     width: 3rem;
 }
+/* Disable Blue Highlight when Touch/Press object with Cursor:Pointer */
+*{
+    -webkit-tap-highlight-color: transparent;
+}

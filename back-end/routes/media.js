@@ -7,22 +7,26 @@ const getLoggedUser = require("../helper/getLoggedUser")
 const {postModel} = require("../model/postModel");
 const getLoggedUserData = require("../helper/getLoggedUserData");
 const postAuthentication = async(req,res,next)=>{
-    const username  = await getLoggedUser(req.cookies.secret,req.cookies.uname)
-
-    await getLoggedUserData(username).then((result)=>{
+    try {
         
-        // console.log("r",result)
-        if(result && result[0].following.includes(req.params.username) || req.params.username===username){
-            next();
-        }
-        else{
-            // console.log("here")
-            res.sendStatus(401);
-        }
-    })
+        const username  = await getLoggedUser(req.cookies.secret,req.cookies.uname)
+        console.log("u",username,typeof(username));
+       await getLoggedUserData(username).then((result)=>{
+            console.log("r",username,typeof(username),result)
+            if(result && result[0] && result[0].following  && result[0].following.includes(req.params.username) || req.params.username===username){
+                next();
+            }
+            else{
+                // console.log("here")
+                res.sendStatus(401);
+            }
+        })
+    } catch (error) {
+        console.log(error);
+    }
 
 }
-router.route("/image/post/:username/:seq").get(authenticateToken,async(req, res) => {
+router.route("/image/post/:username/:seq").get(async(req, res) => {
     //add postAuthentication middleware  if only follwers can access any post 
     try {   
         await postModel.findOne({seq:req.params.seq},async(err,result)=>{

@@ -5,6 +5,8 @@ import FetchError from "./FetchError";
 import { useNavigate } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 import {unfollow} from "../helper/unfollow.eventlistener"
+
+
 var tempIsFetch = false;
 function setFill(element) {
     if (element.classList.contains("fill-1")) {
@@ -22,7 +24,7 @@ var temp;
 function Post(props) {
     const navigate = useNavigate();
     const location = useLocation();
-
+    const backendurl = process.env.REACT_APP_BACKENDURL;
     const [interaction, setInteraction] = useState(() => {
         // console.log("setting interaction only once")
         return { like: 0, dislike: 0 };
@@ -44,7 +46,6 @@ function Post(props) {
     if(window.location.pathname==="/profile")
         isProfilePage.current=1;
     else isProfilePage.current=0;
-
     useEffect(() => { 
         if (window.location.pathname != "/home") {
             // username.current=data
@@ -332,7 +333,7 @@ function Post(props) {
                     {/* TODO: add link on click to navigate to profile page for below div */}
                     <div className="post-header">
                         <img
-                            src={`http://localhost:8080/profile/profileImg/${props.uname}`}
+                            src={`http://${backendurl}/profile/profileImg/${props.uname}`}
                             alt=""
                             id="post-header-profile-img"
                             loading="lazy"
@@ -361,7 +362,7 @@ function Post(props) {
                             </div>
                         </div>
                         <div className="post-img-container">
-                            <img id={`post-img-${props.seq}`} src={`http://localhost:8080/media/image/post/${props.uname}/${props.seq}`} alt="" srcSet="" />
+                            <img id={`post-img-${props.seq}`} src={`http://${backendurl}/media/image/post/${props.uname}/${props.seq}`} alt="" srcSet="" />
                         </div>
                     </div>
                     <div className="interaction-container">

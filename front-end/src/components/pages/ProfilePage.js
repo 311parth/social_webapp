@@ -14,6 +14,7 @@ function ProfilePage(props) {
   const username = useRef(-1);
   const [usernameFixed,setUsernameFixed] = useState();//to update that username is fetched and fixed
   
+  const backendurl = process.env.REACT_APP_BACKENDURL;
   
   const [urlQueryChange,setUrlQueryChange] = useState(0);
   //there is problem if user is in this page and click sidebar(followerlist)then page is not re-rendering 
@@ -126,7 +127,7 @@ function ProfilePage(props) {
             <h3>@{queryUsername}</h3>
             <div>
               <img
-                src={`http://localhost:8080/profile/profileImg/${queryUsername}`}
+                src={`http://${backendurl}/profile/profileImg/${queryUsername}`}
                 alt=""
                 id="img-main"
                 loading="lazy"
@@ -156,9 +157,9 @@ function ProfilePage(props) {
   
             <div
               className="sidebar-main"
-              style={{
-                height: "fit-content",
-              }}
+              // style={{
+              //   height: "fit-content",
+              // }}
             >
               <span className="sidebar-header-text">Followers</span>
               <div className="sidebar-main-card-container">
@@ -168,7 +169,7 @@ function ProfilePage(props) {
                     <FollowingList
                       key={i.toString()}
                       username={value}
-                      imgsrc={`http://localhost:8080/profile/profileImg/${value}`}
+                      imgsrc={`http://${backendurl}/profile/profileImg/${value}`}
                     />
                   );
                 })}

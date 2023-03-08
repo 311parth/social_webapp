@@ -1,7 +1,7 @@
 
 const jwt = require("jsonwebtoken");
 
-function getLoggedUser(token, uname) {
+ function getLoggedUser(token, uname) {
     //parameters : cookies.secret and cookies.uname
     var logged_user="";
     jwt.verify(token, process.env.TOKEN_SECRET, (err, user) => {

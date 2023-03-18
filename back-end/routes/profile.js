@@ -35,6 +35,7 @@ const upload = multer({
 
 
 async function saveProfileImgToDB(req, res, next) {
+  try {
     if (req.file) {
       // console.log(req.file);
       sharp.cache(false);
@@ -83,6 +84,10 @@ async function saveProfileImgToDB(req, res, next) {
         next();
       });
     }
+      
+  } catch (error) {
+    console.log(error)
+  }
 }
 
 //TODO: add authentication authorization for below route
@@ -92,31 +97,36 @@ router
     res.json({ isuploaded: 1 });
   });
 router.route("/profileImg/:username").get(async (req, res) => {
-  await profileImageModel
-    .findOne({ username: req.params.username }, async (err, result) => {
-      if (err) throw err;
-      if (result) {
-        // console.log(result.img.contentType,result.username);
-        res.contentType(result.img.contentType);
-        res.send(result.img.data);
-      }
-      //if not getting result then return default  image
-      else {
-        await profileImageModel
-          .findOne({ username: "test" }, (err, result) => {
-            if (err) throw err;
-            if (result) {
-              // console.log(result.img.contentType);
-              res.contentType(result.img.contentType);
-              res.send(result.img.data);
-            }
-          })
-          .clone();
-      }
-    })
-    .clone();
-  // res.json({"isok":0})
-  // res.json({"isok": req.params.username});
+  try {
+    await profileImageModel
+      .findOne({ username: req.params.username }, async (err, result) => {
+        if (err) throw err;
+        if (result) {
+          // console.log(result.img.contentType,result.username);
+          res.contentType(result.img.contentType);
+          res.send(result.img.data);
+        }
+        //if not getting result then return default  image
+        else {
+          await profileImageModel
+            .findOne({ username: "test" }, (err, result) => {
+              if (err) throw err;
+              if (result) {
+                // console.log(result.img.contentType);
+                res.contentType(result.img.contentType);
+                res.send(result.img.data);
+              }
+            })
+            .clone();
+        }
+      })
+      .clone();
+    // res.json({"isok":0})
+    // res.json({"isok": req.params.username});
+      
+  } catch (error) {
+    console.log(error)
+  }
 });
 
 module.exports = router;

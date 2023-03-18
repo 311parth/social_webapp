@@ -167,36 +167,33 @@ function Post(props) {
     const submit_like = async(e) => {
         setLoad(1);
         await fetch("/api/interaction/like", {
-            method: "PATCH",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            credentials: "include",
-            body: JSON.stringify({
-                seq: props.seq,
-                fill: likeflag,
-            }),
-
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({
+            seq: props.seq,
+            likeflag: likeflag,
+            dislikeflag: dislikeflag,
+          }),
         })
-            .then((res) => res.json())
-            .then(async(data) => { 
-                if(data && data.interactionACK){
-                        if (!likeflag){
-                            setInteraction({
-                                like: interaction.like + 1,
-                                dislike: interaction.dislike,
-                            })
-                        } else {
-                              setInteraction({
-                                like: interaction.like - 1,
-                                dislike: interaction.dislike,
-                            })
-                        }
-                        setLikeflag(likeflag ? 0 :  1);
-                        //
-                        
-                    }
-            });
+          .then((res) => res.json())
+          .then(async (data) => {
+            if (data && data.interactionACK) {
+            //   console.log(data);
+            //setting the interaction data
+              setInteraction({
+                like: data.likes,
+                dislike: data.dislikes,
+              });
+
+              //setting flags of interactions 
+              //if -1 then unchanged 
+              if (data.dislikeflag !== -1) setDislikeflag(data.dislikeflag);
+              if (data.likeflag !== -1) setLikeflag(data.likeflag);
+            }
+          });
     };
     useEffect(() => {
         setLoad(0);//to chanage load state
@@ -229,33 +226,32 @@ function Post(props) {
     const submit_dislike =async () => {
         setLoad(1);
         await fetch("/api/interaction/dislike", {
-            method: "PATCH",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            credentials: "include",
-            body: JSON.stringify({
-                seq: props.seq,
-                fill: dislikeflag,
-            }),
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({
+            seq: props.seq,
+            likeflag: likeflag,
+            dislikeflag: dislikeflag,
+          }),
         })
-            .then((res) => res.json())
-            .then((data) => {
-                if(data && data.interactionACK){
-                    if (!dislikeflag){
-                        setInteraction({
-                            like: interaction.like ,
-                            dislike: interaction.dislike + 1,
-                        })
-                    } else {
-                          setInteraction({
-                            like: interaction.like ,
-                            dislike: interaction.dislike-1,
-                        })
-                    }
-                    setDislikeflag(dislikeflag ? 0 :  1);
-                }
-             });
+          .then((res) => res.json())
+          .then((data) => {
+            if (data && data.interactionACK) {
+            
+            //setting the interaction data
+              setInteraction({
+                like: data.likes,
+                dislike: data.dislikes,
+              });
+              //setting flags of interactions 
+              //if -1 then unchanged 
+              if (data.dislikeflag !== -1) setDislikeflag(data.dislikeflag);
+              if (data.likeflag !== -1) setLikeflag(data.likeflag);
+            }
+          });
     };
 
     useEffect(() => {

@@ -27,6 +27,7 @@ const postAuthentication = async(req,res,next)=>{
 
 }
 router.route("/image/post/:username/:seq").get(async(req, res) => {
+    
     //add postAuthentication middleware  if only follwers can access any post 
     try {   
         await postModel.findOne({seq:req.params.seq},async(err,result)=>{

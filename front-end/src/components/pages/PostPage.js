@@ -2,6 +2,7 @@ import React,{useEffect, useRef, useState} from 'react'
 import Navbar from '../Navbar'
 import FetchError from '../FetchError';
 import {useLocation} from 'react-router-dom'
+import { ToastContainer, toast } from 'react-toastify';
 
 function PostPage(props) {
 
@@ -65,21 +66,22 @@ function PostPage(props) {
 
         // console.log(formData.get('postUname'))
 
-        console.log(body)
+        // console.log(body)
         fetch("/api/post",{
             method: 'POST',
             credentials: "include",
             body:formData
         }).then((resonse)=>resonse.json())
         .then((data)=>{
-            // console.log(data);
-
+            console.log(data);
             //reseting form
             document.getElementById("input-post-title").value = '';
             document.getElementById("input-post-desc").value = '';
             document.getElementById("inputPostImg").value = '';
             document.getElementById("input-post-img-text").textContent = "Tap to Attach Image"
-
+            if(data && data.posted){
+                toast.success("Posted ")
+            }
         })
     }
 
@@ -115,6 +117,17 @@ function PostPage(props) {
                   </label>
                     <input type="button" onClick={post} value="post" className="post-input-submit post-input-element" />
                 </form>
+                <ToastContainer
+                    position="top-center"
+                    autoClose={5000}
+                    hideProgressBar={false}
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    draggable
+                    pauseOnHover
+                    theme="light" />
             </>
         )
     }else{

@@ -10,6 +10,8 @@ import SelfProfilePage from './components/pages/SelfProfilePage';
 import ProfilePage from './components/pages/ProfilePage';
 import TestPage from './components/pages/TestPage';
 import PostViewPage from './components/pages/PostViewPage';
+import 'react-toastify/dist/ReactToastify.css';
+
 function App() {
 
   return (

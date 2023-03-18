@@ -5,9 +5,7 @@ import FetchError from "./FetchError";
 import { useNavigate } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 import {unfollow} from "../helper/unfollow.eventlistener"
-
-
-var tempIsFetch = false;
+import loaderSrc from "../icons/loader.gif"
 function setFill(element) {
     if (element.classList.contains("fill-1")) {
         element.style =
@@ -29,17 +27,21 @@ function Post(props) {
         // console.log("setting interaction only once")
         return { like: 0, dislike: 0 };
     });
+
+    const [likeflag,setLikeflag] = useState(0);
+    const [dislikeflag,setDislikeflag] = useState(0);
+
     
     const [comments, setComments] = useState([]);
     const usernameDefault = useContext(UsernameContext);
     // console.log(usernameDefault,"co")
     var interactionData = {};
     let username = useRef();
-    let isliked = useRef(0);
-    let isdisliked = useRef(0);
     let ishome = useRef(0);
     let isFirstFetch = useRef(0);
     let isProfilePage=useRef(0);
+    let likeDisableFlag =useRef(0);
+
     if (window.location.pathname === "/home")
         ishome.current = 1;
     else ishome.current = 0;
@@ -105,8 +107,7 @@ function Post(props) {
                     );
 
                     if (interactionData.liked_uname.includes(username.current)) {
-                        // console.log(interactionData.liked_uname)
-                        isliked.current = 1;
+                        setLikeflag(1);
                         element.classList.add("fill-1");
                         setFill(element);
                     }
@@ -115,7 +116,8 @@ function Post(props) {
                     );
                     if (interactionData.disliked_uname.includes(username.current)) {
                         // console.log(interactionData.disliked_uname)
-                        isdisliked.current = 1;
+                        // isdisliked.current = 1;
+                        setDislikeflag(1);
                         element.classList.add("fill-1");
                         setFill(element);
                     }
@@ -155,93 +157,105 @@ function Post(props) {
                 element.outerHTML = "";
             })
         }
-
-        
-
     }, []);
     
     // TODO: add post like button fill or unfill at  first load
     // TODO: add like count
     // TODO:  add like or dislike only one at a time
     // TODO: only increment like count if like is succesfully
+    const [load,setLoad] = useState(0);
+    const submit_like = async(e) => {
+        setLoad(1);
+        await fetch("/api/interaction/like", {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify({
+                seq: props.seq,
+                fill: likeflag,
+            }),
 
-    const submit_like = () => {
-        // console.log("func",username.current)
-        var element = document.getElementById(
+        })
+            .then((res) => res.json())
+            .then(async(data) => { 
+                if(data && data.interactionACK){
+                        if (!likeflag){
+                            setInteraction({
+                                like: interaction.like + 1,
+                                dislike: interaction.dislike,
+                            })
+                        } else {
+                              setInteraction({
+                                like: interaction.like - 1,
+                                dislike: interaction.dislike,
+                            })
+                        }
+                        setLikeflag(likeflag ? 0 :  1);
+                        //
+                        
+                    }
+            });
+    };
+    useEffect(() => {
+        setLoad(0);//to chanage load state
+    }, [likeflag,dislikeflag])
+    useEffect(() => {
+        if(load)return;
+        var likeSVG = document.getElementById(
             "material-symbols-outlined-like-" + props.id
         );
-        element.classList.toggle("fill-1");
-        // console.log(props.seq)
-        const body = {
-            seq: props.seq,
-            fill: 0,
-        };
-        element.classList.contains("fill-1") ? (body.fill = 0) : (body.fill = 1);
-
-        // console.log(body);
-        fetch("/api/interaction/like", {
-            method: "PATCH",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            credentials: "include",
-            body: JSON.stringify(body),
-        })
-            .then((res) => res.json())
-            .then((data) => { });
-
-        setFill(element);
-        if (body.fill === 0) {
-            isliked.current = 1;
-            setInteraction({
-                like: interaction.like + 1,
-                dislike: interaction.dislike,
-            })
-        } else {
-            isliked.current = 0;
-            setInteraction({
-                like: interaction.like - 1,
-                dislike: interaction.dislike,
-            })
+        if(!likeSVG)return;
+        if(likeflag===1){
+            likeSVG.classList.add("fill-1");
+        }else{
+            likeSVG.classList.remove("fill-1");
         }
+        setFill(likeSVG);
 
-    };
-    const submit_dislike = () => {
-        // console.log("func",username.current)
-
-        var element = document.getElementById(
+        //setting style for dislike icon
+        var dislikeSVG = document.getElementById(
             "material-symbols-outlined-dislike-" + props.id
         );
-        element.classList.toggle("fill-1");
-        const body = {
-            seq: props.seq,
-            fill: 0,
-        };
-        element.classList.contains("fill-1") ? (body.fill = 0) : (body.fill = 1);
-        fetch("/api/interaction/dislike", {
+        if(!dislikeSVG)return;
+        if(dislikeflag===1){
+            dislikeSVG.classList.add("fill-1");
+        }else{
+            dislikeSVG.classList.remove("fill-1");
+        }
+        setFill(dislikeSVG);
+    }, [load])
+    const submit_dislike =async () => {
+        setLoad(1);
+        await fetch("/api/interaction/dislike", {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
             },
             credentials: "include",
-            body: JSON.stringify(body),
+            body: JSON.stringify({
+                seq: props.seq,
+                fill: dislikeflag,
+            }),
         })
             .then((res) => res.json())
-            .then((data) => { });
-        setFill(element);
-        if (body.fill === 0) {
-            isdisliked.current = 1;
-            setInteraction({
-                like: interaction.like,
-                dislike: interaction.dislike + 1,
-            })
-        } else {
-            isdisliked.current = 0;
-            setInteraction({
-                like: interaction.like,
-                dislike: interaction.dislike - 1,
-            });
-        }
+            .then((data) => {
+                if(data && data.interactionACK){
+                    if (!dislikeflag){
+                        setInteraction({
+                            like: interaction.like ,
+                            dislike: interaction.dislike + 1,
+                        })
+                    } else {
+                          setInteraction({
+                            like: interaction.like ,
+                            dislike: interaction.dislike-1,
+                        })
+                    }
+                    setDislikeflag(dislikeflag ? 0 :  1);
+                }
+             });
     };
 
     useEffect(() => {
@@ -302,7 +316,6 @@ function Post(props) {
     }
 
     const postClicked = (e) => {
-            // console.log(location)
             //if the post is on home page then only onclick, to avoid nested click on post components
             if (location.pathname === "/home") {
                 navigate(`post/view/` + props.seq, {
@@ -311,23 +324,20 @@ function Post(props) {
                         uname: props.uname,
                         title: props.title,
                         desc: props.desc,
-                        isliked: isliked.current,
-                        isdisliked: isdisliked.current
+                        isliked : likeflag,
+                        isdisliked: dislikeflag
+                        
                     }
                 })
             }
 
-    }
+    }   
 
-    // newFunction(username, props);
     
   
     var i = 0;
-    // console.log("isliked : ",isliked,"isdisliked:",isdisliked)
-    // console.log(interaction,count++)
     return (
         <>
-        {/* {console.log(interaction,count++)} */}
             <div className="post-container" >
                 <div className="post-main">
                     {/* TODO: add link on click to navigate to profile page for below div */}
@@ -354,7 +364,7 @@ function Post(props) {
                     {!isProfilePage.current ? <button className="follow-btn unfollow-btn" id={"unfollow-button-"+props.id} type="button"   onClick={()=>unfollow(username.current,props.uname,props.id)}>UnFollow</button> : ""}
                     {/* TODO: add filter after unfollowing  */}
                     </div>
-                    <div className="post-body" id={`post-main-${props.seq}`} onClick={(e) => { postClicked(e) }} >
+                    <div className="post-body" id={`post-main-${props.seq}`} onClick={postClicked} >
                         <div className="post-text-container">
                             <h3 className="post-title">{props.title}</h3>
                             <div className="post-desc-container">
@@ -366,35 +376,43 @@ function Post(props) {
                         </div>
                     </div>
                     <div className="interaction-container">
-                        <button className="interaction-btn " onClick={submit_like}>
-                            <span
-                                className="material-symbols-outlined"
-                                id={"material-symbols-outlined-like-" + props.id}
-                            >
-                                thumb_up_off
-                            </span>
-                            <span
-                                className="post-like-count post-interaction-count"
-                                id={"like-count-" + props.id}
-                            >
-                                {interaction.like}
-                            </span>
-                        </button>
+                        {load ? <>
+                                <img height="25" width="25" src={loaderSrc}  alt="" srcSet="" />
+                        </>: <>
+                            <button className="interaction-btn " id={"like-btn-" + props.id} disabled={likeDisableFlag.current}  onClick={(e)=>{submit_like(e)}}>
+                                <span
+                                    className="material-symbols-outlined"
+                                    id={"material-symbols-outlined-like-" + props.id}
+                                >
+                                    thumb_up_off
+                                </span>
+                                <span
+                                    className="post-like-count post-interaction-count"
+                                    id={"like-count-" + props.id}
+                                >
+                                    {interaction.like}
+                                </span>
+                            </button>
+                        </>}
+                        {load? <>
+                            <img height="25" width="25" src={loaderSrc}  alt="" srcSet="" />
+                        </> :<>
+                            <button className="interaction-btn" id={"dislike-btn-" + props.id} onClick={submit_dislike}>
+                                <span
+                                    className="material-symbols-outlined "
+                                    id={"material-symbols-outlined-dislike-" + props.id}
+                                >
+                                    thumb_down_off
+                                </span>
+                                <span
+                                    className="post-dislike-count post-interaction-count"
+                                    id={"dislike-count-" + props.id}
+                                >
+                                    {interaction.dislike}
+                                </span>
+                            </button>
+                        </> }
 
-                        <button className="interaction-btn" onClick={submit_dislike}>
-                            <span
-                                className="material-symbols-outlined "
-                                id={"material-symbols-outlined-dislike-" + props.id}
-                            >
-                                thumb_down_off
-                            </span>
-                            <span
-                                className="post-dislike-count post-interaction-count"
-                                id={"dislike-count-" + props.id}
-                            >
-                                {interaction.dislike}
-                            </span>
-                        </button>
                     </div>
                     {/* if this post is on home page then don't show comment box  */}
                     {!ishome.current ?

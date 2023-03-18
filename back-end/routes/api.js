@@ -65,13 +65,16 @@ const upload = multer({
 });
 
 async function savePostImgToDB(req, res, next) {
+  try {
+    
+  
     var uname = req.body.postUname;
     var title = req.body.postTitle;
     var desc = req.body.postDesc;
     var time = req.body.postTime;
 
   seq++;
-  if (req.files) {
+  if (req.files && req.files.inputPostImg && req.files.inputPostImg[0]) {
     // console.log("req.file if")
     //req.files name is complicated as below
     const fileOriginalName = req.files.inputPostImg[0].originalname
@@ -121,6 +124,9 @@ async function savePostImgToDB(req, res, next) {
     })
   }
   next();
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 router
@@ -239,14 +245,13 @@ router
   .route("/interaction/:type")
   .patch(authenticateToken, async (req, res) => {
     //type: like or dislike
-
     const seq = req.body.seq;
     const fill = req.body.fill;
     const typeOfInteraction = req.params.type;
     var interaction;
     var updated_interaction;
     const username = getLoggedUser(req.cookies.secret, req.cookies.uname);
-
+    // console.log(req.body)
     //fetching interaction data of post
     await interactionModel
       .findOne({ seq: seq }, async (err, result) => {
@@ -283,6 +288,8 @@ router
           // console.log(result);
         })
         .clone();
+    await res.json({ interactionACK: 1,likes: updated_interaction  });
+
     } else if (typeOfInteraction === "dislike") {
       await interactionModel
         .findOne({ seq: seq }, async (err, result) => {
@@ -300,8 +307,9 @@ router
           // console.log(result);
         })
         .clone();
+      await res.json({ interactionACK: 1,dislikes: updated_interaction  });
     }
-    await res.json({ isok: 1 });
+    // await res.json({ interactionACK: 1 });
   });
 router.route("/follow").post(async (req, res) => {
   const username = req.body.username;

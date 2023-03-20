@@ -202,9 +202,9 @@ router
         if(result && result[0].following){
           if(result[0].following.includes(req.params.username)){
             postModel
-            .find({ uname: { $in: req.params.username } }, { _id: 0, time: 0, __v: 0 })
+            .find({ uname: { $in: req.params.username } }, { _id: 0, time: 0, __v: 0 ,img : 0})
             .sort({ seq: -1 })
-            .limit(5)
+            .limit(3)
             .clone()
             .exec(async (err, result) => {
               if (err) {

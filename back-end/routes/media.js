@@ -37,10 +37,11 @@ router.route("/image/post/:username/:seq").get(async(req, res) => {
                     res.contentType(result.img.contentType);
                     res.send(result.img.data);
             }else{
-                res.sendStatus(404);
+                res.sendStatus(204);//no content 
             }
         }).clone()
     } catch (error) {
+        res.sendStatus(404);
         console.log(error);
     }
 //   res.json({ username: req.params.username});

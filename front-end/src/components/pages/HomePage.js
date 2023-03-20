@@ -105,7 +105,7 @@ function HomePage() {
                 else res.json({ "isok": 0 })
             })
             .then(async (data) => {
-                    data.forEach(element => {
+                    data && data.forEach(element => {
                         state.newPost.push(element);
                     });
                     setState({

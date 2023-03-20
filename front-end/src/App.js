@@ -8,7 +8,6 @@ import PostPage from './components/pages/PostPage';
 import LogoutPage from './components/pages/LogoutPage';
 import SelfProfilePage from './components/pages/SelfProfilePage';
 import ProfilePage from './components/pages/ProfilePage';
-import TestPage from './components/pages/TestPage';
 import PostViewPage from './components/pages/PostViewPage';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -27,7 +26,6 @@ function App() {
           <Route path="/logout" element={<LogoutPage/>}></Route>
           <Route path="/profile" element={<SelfProfilePage/>}></Route>
           <Route path="/user" element={<ProfilePage/>}></Route>
-          <Route path="/test" element={<TestPage/>}></Route>
           <Route path="home/post/view/:id" element={<PostViewPage/>}></Route>
 
 

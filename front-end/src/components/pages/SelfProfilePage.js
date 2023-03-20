@@ -21,7 +21,7 @@ function SelfProfilePage(props) {
                 username.current = navState.state.username;
             }else{
 
-                await fetch("/api/get_username", {
+                await fetch("/api/v1/api/get_username", {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -34,7 +34,7 @@ function SelfProfilePage(props) {
                 })
             }
             //fetching posts
-            await fetch(`/api/profile/post/${username.current}`, {
+            await fetch(`/api/v1/api/profile/post/${username.current}`, {
                 method: "GET",
                 headers: {
                     'Content-Type': 'application/json'
@@ -50,7 +50,7 @@ function SelfProfilePage(props) {
                 })
     
             //fetching following 
-            await fetch(`/api/profile/${username.current}/following`,{
+            await fetch(`/api/v1/api/profile/${username.current}/following`,{
                 method:"GET",
                 headers:{
                     'Content-Type' : 'application/json'
@@ -69,7 +69,7 @@ function SelfProfilePage(props) {
         var inputProfileImg = document.getElementById("input-profile-img");
         const formData = new FormData();
         formData.append("inputProfileImg", inputProfileImg.files[0]);
-        fetch(`/profile/profileimg/upload/${username.current}`, {
+        fetch(`/api/v1/profile/profileimg/upload/${username.current}`, {
             method: "POST",
             credentials: "include",
             body: formData,
@@ -78,7 +78,7 @@ function SelfProfilePage(props) {
             .then((data) => {
                 // console.log(data);
                 //must fetch it once to make sure that image exist on that route
-                fetch(`http://${backendurl}/profile/profileImg/${username.current}`, {
+                fetch(`http://${backendurl}/api/v1/profile/profileImg/${username.current}`, {
                     method: "GET",
                 })
                     .then((res) => res)
@@ -87,7 +87,7 @@ function SelfProfilePage(props) {
                     });
                 document.getElementById(
                     "img-main"
-                ).src = `http://${backendurl}/profile/profileImg/${username.current}`;
+                ).src = `http://${backendurl}/api/v1/profile/profileImg/${username.current}`;
             });
     }
     
@@ -99,7 +99,7 @@ function SelfProfilePage(props) {
                 <div className="profile-header-container">
                     <div>
                         <h3 className="profile-header-username">@{username.current}</h3>
-                        <img  src={`http://${backendurl}/profile/profileImg/${username.current}`} alt="" id="img-main" loading="lazy" width="50" height="50" style={{borderRadius: "50%",}}/>
+                        <img  src={`http://${backendurl}/api/v1/profile/profileImg/${username.current}`} alt="" id="img-main" loading="lazy" width="50" height="50" style={{borderRadius: "50%",}}/>
                     </div>
                     <div>
                         <form >
@@ -142,7 +142,7 @@ function SelfProfilePage(props) {
                             <div className="sidebar-main-card-container">
                                 {
                                     usernameArray.map((value,i)=>{
-                                        return <FollowingList key={i.toString()}  username={value} imgsrc={`http://${backendurl}/profile/profileImg/${value}`} />
+                                        return <FollowingList key={i.toString()}  username={value} imgsrc={`http://${backendurl}/api/v1/profile/profileImg/${value}`} />
                                     })
                                 }
                             </div>

@@ -14,7 +14,7 @@ function Sidebar(props) {
     const body = {
       username: username,
     };
-    fetch("/api/random/followcard", {
+    fetch("/api/v1/api/random/followcard", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -45,7 +45,7 @@ function Sidebar(props) {
               // console.log(key,value,typeof(key),typeof(value));
               <SidebarFollowCard
                 key={key}
-                imgsrc={`http://${backendurl}/profile/profileImg/${value}`}
+                imgsrc={`http://${backendurl}/api/v1/profile/profileImg/${value}`}
                 username={value}
                 id={key}
               />

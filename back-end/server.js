@@ -39,14 +39,14 @@ app.get("/", (req, res) => {
   res.send("he");
 });
 
-app.use("/home", home);
-app.use("/checksignupusername", checksignupusername);
-app.use("/login", login);
-app.use("/logout", logout);
-app.use("/signup", signup);
-app.use("/api", api);
-app.use("/profile", profile);
-app.use("/media", media);
+app.use("/api/v1/home", home);
+app.use("/api/v1/checksignupusername", checksignupusername);
+app.use("/api/v1/login", login);
+app.use("/api/v1/logout", logout);
+app.use("/api/v1/signup", signup);
+app.use("/api/v1/api", api);
+app.use("/api/v1/profile", profile);
+app.use("/api/v1/media", media);
 
 
 server.listen(process.env.PORT,()=>{

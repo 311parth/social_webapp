@@ -25,7 +25,7 @@ function ProfilePage(props) {
     const setUsername =async()=>{
       if(username.current !==-1)return ;
       else{//this will trigger when user will reload this page(after reload username.current is undefined)
-          await fetch("/api/get_username", {
+          await fetch("/api/v1/api/get_username", {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
@@ -43,7 +43,7 @@ function ProfilePage(props) {
     const intialLoadProfilePage=async()=>{
       // setQueryUsername(window.location.search.split('username=')[1]);
       //fetching posts
-      fetch(`/api/profile/post/${queryUsername}`, {
+      fetch(`/api/v1/api/profile/post/${queryUsername}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -61,7 +61,7 @@ function ProfilePage(props) {
 
       //fetching following
       if (!usernameArray || urlQueryChange!==0) {
-        await fetch(`/api/user?username=${queryUsername}`, {
+        await fetch(`/api/v1/api/user?username=${queryUsername}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -82,7 +82,7 @@ function ProfilePage(props) {
     intialLoadProfilePage();
   }, [setUsernameFixed,location]);
   useEffect(() => {
-        fetch(`/api/get_following`, {
+        fetch(`/api/v1/api/get_following`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -127,7 +127,7 @@ function ProfilePage(props) {
             <h3>@{queryUsername}</h3>
             <div>
               <img
-                src={`http://${backendurl}/profile/profileImg/${queryUsername}`}
+                src={`http://${backendurl}/api/v1/profile/profileImg/${queryUsername}`}
                 alt=""
                 id="img-main"
                 loading="lazy"
@@ -169,7 +169,7 @@ function ProfilePage(props) {
                     <FollowingList
                       key={i.toString()}
                       username={value}
-                      imgsrc={`http://${backendurl}/profile/profileImg/${value}`}
+                      imgsrc={`http://${backendurl}/api/v1/profile/profileImg/${value}`}
                     />
                   );
                 })}

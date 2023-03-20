@@ -13,7 +13,7 @@ function SidebarFollowCard(props) {
             username : username,
             followedUsername : props.username
         };
-        fetch("/api/follow",{
+        fetch("/api/v1/api/follow",{
             method:"POST",
             headers:{
                 'Content-Type' : 'application/json'

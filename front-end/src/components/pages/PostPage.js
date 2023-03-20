@@ -16,7 +16,7 @@ function PostPage(props) {
                 // username.current = location.state.username;
                 setUsername(location.state.username)
             }else{
-                fetch("/api/get_username", {
+                fetch("/api/v1/api/get_username", {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -67,7 +67,7 @@ function PostPage(props) {
         // console.log(formData.get('postUname'))
 
         // console.log(body)
-        fetch("/api/post",{
+        fetch("/api/v1/api/post",{
             method: 'POST',
             credentials: "include",
             body:formData

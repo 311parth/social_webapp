@@ -10,7 +10,7 @@ function Navbar(props) {
     const username = useContext(UsernameContext)
 
     const logout=()=>{
-        fetch("/logout",{
+        fetch("/api/v1/logout",{
             method:"POST",
             headers:{
                 'Content-Type': 'application/json',

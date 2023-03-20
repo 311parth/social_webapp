@@ -16,7 +16,7 @@ function LoginPage() {
             loginUname: uname, 
             loginPassword: pw
         }  
-        fetch("/login",{
+        fetch("/api/v1/login",{
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

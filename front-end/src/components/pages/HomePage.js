@@ -32,7 +32,7 @@ function HomePage() {
     const isFetchedAllready = useRef(0);
     const [usernameFlag,setUsernameFlag] = useState(0);
     useEffect(() => {
-        fetch("/api/get_username", {
+        fetch("/api/v1/api/get_username", {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -47,7 +47,7 @@ function HomePage() {
 
             //fetching if user is logged or not
 
-            fetch("/home", {
+            fetch("/api/v1/home", {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
@@ -64,7 +64,7 @@ function HomePage() {
     
             
             //fetching posts
-            fetch(`/api/post?seq=${lastPostSeq.current}`, {
+            fetch(`/api/v1/api/post?seq=${lastPostSeq.current}`, {
                 method: "GET",
                 headers: {
                     'Content-Type': 'application/json'
@@ -94,7 +94,7 @@ function HomePage() {
 
         //this means following
         if( followingChange.following===1){
-            fetch(`/api/post/latest/${followingChange.username}`, {
+            fetch(`/api/v1/api/post/latest/${followingChange.username}`, {
                 method: "GET",
                 headers: {
                     'Content-Type': 'application/json'
@@ -129,7 +129,7 @@ function HomePage() {
         if(getPost===0)return;//just to avoid  refetch in intial load case
         isFetchedAllready.current=1;//this flag=1  to indicate that fetching is in process and  post is beign rendered (avoid immediate re-fetch)
 
-            fetch(`/api/post?seq=${lastPostSeq.current}`, {
+            fetch(`/api/v1/api/post?seq=${lastPostSeq.current}`, {
                 method: "GET",
                 headers: {
                     'Content-Type': 'application/json'

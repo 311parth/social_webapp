@@ -6,7 +6,7 @@ function unfollow(username,unfollowedUsername,id) {
         //when user is already following then this will work as follow action instead of unfollow because of flexible api of unfollow
     };
     // console.log(body,id);
-    fetch("/api/unfollow", {
+    fetch("/api/v1/api/unfollow", {
         method: "POST",
         headers: {
             'Content-Type': 'application/json'

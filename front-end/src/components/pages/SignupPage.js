@@ -19,7 +19,7 @@ function SignupPage() {
       signupPassword: pw,
     };
     console.log(JSON.stringify(body));
-    fetch("/signup", {
+    fetch("/api/v1/signup", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -38,7 +38,7 @@ function SignupPage() {
           formData.append('inputProfileImg', inputProfileImg.files[0]);
           console.log("formData",formData)
           //now username is granted and unique so now i can upload profile image
-          fetch(`/profile/profileimg/upload/${data.uname}`, {
+          fetch(`/api/v1/profile/profileimg/upload/${data.uname}`, {
             method: "POST",
             credentials: "include",
             body: formData

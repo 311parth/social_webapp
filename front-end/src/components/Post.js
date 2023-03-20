@@ -51,7 +51,7 @@ function Post(props) {
     useEffect(() => { 
         if (window.location.pathname != "/home") {
             // username.current=data
-            fetch("/api/get_username", {
+            fetch("/api/v1/api/get_username", {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -90,7 +90,7 @@ function Post(props) {
             // console.log("fetch",username.current)
             //fetching interactions
 
-            fetch("/api/interaction/" + props.seq, {
+            fetch("/api/v1/api/interaction/" + props.seq, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -127,7 +127,7 @@ function Post(props) {
 
 
             //fetching comments
-            fetch("/api/post/comment/" + props.seq, {
+            fetch("/api/v1/api/post/comment/" + props.seq, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -166,7 +166,7 @@ function Post(props) {
     const [load,setLoad] = useState(0);
     const submit_like = async(e) => {
         setLoad(1);
-        await fetch("/api/interaction/like", {
+        await fetch("/api/v1/api/interaction/like", {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
@@ -225,7 +225,7 @@ function Post(props) {
     }, [load])
     const submit_dislike =async () => {
         setLoad(1);
-        await fetch("/api/interaction/dislike", {
+        await fetch("/api/v1/api/interaction/dislike", {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
@@ -258,7 +258,7 @@ function Post(props) {
         setInterval(() => {
             // console.log(interaction)
             // console.count("refresh")
-                    fetch("/api/interaction/" + props.seq, {
+                    fetch("/api/v1/api/interaction/" + props.seq, {
                         method: "GET",
                         headers: {
                             "Content-Type": "application/json",
@@ -280,7 +280,7 @@ function Post(props) {
                             }
                         });
                         // console.count("update called")
-        }, 10000);//refresh interaction count after x amount of seconds 
+        }, 30000);//refresh interaction count after x amount of seconds 
     }, [])
     const num = 0;
 
@@ -290,7 +290,7 @@ function Post(props) {
         var commentPostBody = {
             comment: postCommentInput.value
         }
-        fetch("/api/post/comment/" + props.seq, {
+        fetch("/api/v1/api/post/comment/" + props.seq, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -339,7 +339,7 @@ function Post(props) {
                     {/* TODO: add link on click to navigate to profile page for below div */}
                     <div className="post-header">
                         <img
-                            src={`http://${backendurl}/profile/profileImg/${props.uname}`}
+                            src={`http://${backendurl}/api/v1/profile/profileImg/${props.uname}`}
                             alt=""
                             id="post-header-profile-img"
                             loading="lazy"
@@ -368,7 +368,7 @@ function Post(props) {
                             </div>
                         </div>
                         <div className="post-img-container">
-                            <img id={`post-img-${props.seq}`} src={`http://${backendurl}/media/image/post/${props.uname}/${props.seq}`} alt="" srcSet=""  onError={(e) => {
+                            <img id={`post-img-${props.seq}`} src={`http://${backendurl}/api/v1/media/image/post/${props.uname}/${props.seq}`} alt="" srcSet=""  onError={(e) => {
                                 e.preventDefault();
                                 e.target.style.display = "none";
                                 }} />

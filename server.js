@@ -11,7 +11,7 @@ var cookieParser = require("cookie-parser");
 app.use(cookieParser());
 const path = require("path")
 const dotenv = require("dotenv");
-dotenv.config({path:path.resolve(__dirname,"../.env")});
+dotenv.config();
 
 
 const { conn } = require("./db/db");
@@ -30,6 +30,9 @@ const media = require("./routes/media")
 
 const http = require("http")
 const server = http.createServer(app);
+app.use(express.static(path.join(__dirname+"/build")))
+
+
 
 // app.use((req, res, next) => {
 //   req.io = io;
@@ -49,8 +52,15 @@ app.use("/api/v1/profile", profile);
 app.use("/api/v1/media", media);
 
 
-server.listen(process.env.PORT,()=>{
-  console.log(`Server running on port ${process.env.PORT}`);
+
+app.get("*",(req,res)=>{
+  // console.log(req.url);
+  // res.sendFile(path.join(__dirname+"/build/index.html"))
+  res.sendFile(path.resolve(__dirname,'build','index.html'))
+})
+const port  = process.env.PORT || 8080;
+server.listen(port,()=>{
+  console.log(`Server running on port ${port}`);
 })
 
 

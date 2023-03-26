@@ -52,7 +52,6 @@ app.use("/api/v1/profile", profile);
 app.use("/api/v1/media", media);
 
 
-
 app.get("*",(req,res)=>{
   // console.log(req.url);
   // res.sendFile(path.join(__dirname+"/build/index.html"))

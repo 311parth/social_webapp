@@ -8,7 +8,6 @@ function Sidebar(props) {
   const [usernameArray, setUsernameArray] = useState();
   let urlHostname= window.location.host;
   const backendurl = process.env.REACT_APP_BACKENDURL;
-
   useEffect(() => {
     // console.log(username)
     const body = {

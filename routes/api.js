@@ -44,7 +44,7 @@ const multer = require("multer");
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     //cb stands for call back that auto call by multer
-    cb(null, "./uploads/");
+    cb(null, "./tmp/");
   },
   filename: function (req, file, cb) {
     cb(null,file.originalname);
@@ -91,7 +91,7 @@ async function savePostImgToDB(req, res, next) {
         time: time,
         seq: seq,
         img: {
-          data: fs.readFileSync("uploads/" + fileOriginalName),
+          data: fs.readFileSync("tmp/" + fileOriginalName),
           contentType: "image/jpeg",
           name:fileOriginalName
         },
@@ -105,7 +105,7 @@ async function savePostImgToDB(req, res, next) {
           console.log(err, "error has occur");
         });
       //console.log(req.body);
-      fs.rm("uploads/" +fileOriginalName, () => {
+      fs.rm("tmp/" +fileOriginalName, () => {
         // console.log(3, Date.now());
         // console.log("stored at db removed at server");
       });

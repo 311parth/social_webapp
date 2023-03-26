@@ -11,7 +11,7 @@ const { profileImageModel } = require("../model/profileImageModel");
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     //cb stands for call back that auto call by multer
-    cb(null, "./uploads/");
+    cb(null, "./tmp/");
   },
   filename: function (req, file, cb) {
     cb(null, file.originalname);
@@ -43,10 +43,10 @@ async function saveProfileImgToDB(req, res, next) {
 
       // console.log(1, Date.now());
       const resize = new Promise((resolve, reject) => {
-        sharp(`./uploads/${req.file.filename}`)
+        sharp(`./tmp/${req.file.filename}`)
           .resize(256, 256)
           .toFile(
-            `uploads/${"_resized" + req.file.filename}`,
+            `tmp/${"_resized" + req.file.filename}`,
             function (err, info) {
               if (err) console.log("E", err);
               // console.log(info);
@@ -62,7 +62,7 @@ async function saveProfileImgToDB(req, res, next) {
         const saveImage = await profileImageModel({
           username: req.params.uname,
           img: {
-            data: fs.readFileSync("uploads/" + "_resized" + req.file.filename),
+            data: fs.readFileSync("tmp/" + "_resized" + req.file.filename),
             contentType: "image/png",
           },
         });
@@ -76,8 +76,8 @@ async function saveProfileImgToDB(req, res, next) {
             console.log(err, "error has occur");
           });
         // console.log(req.body);
-        fs.rm("uploads/" + req.file.filename, () => {
-          fs.rm("uploads/" + "_resized" + req.file.filename, () => {});
+        fs.rm("tmp/" + req.file.filename, () => {
+          fs.rm("tmp/" + "_resized" + req.file.filename, () => {});
           // console.log(3, Date.now());
           // console.log("stored at db removed at server");
         });

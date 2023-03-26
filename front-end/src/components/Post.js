@@ -368,7 +368,10 @@ function Post(props) {
                             </div>
                         </div>
                         <div className="post-img-container">
-                            <img id={`post-img-${props.seq}`} src={`https://${backendurl}/api/v1/media/image/post/${props.uname}/${props.seq}`} alt="" srcSet=""  />
+                            <img id={`post-img-${props.seq}`} src={`https://${backendurl}/api/v1/media/image/post/${props.uname}/${props.seq}`} alt="" srcSet=""  onError={(e) => {
+                                e.preventDefault();
+                                e.target.style.display = "none";
+                                }} />
                         </div>
                     </div>
                     <div className="interaction-container">

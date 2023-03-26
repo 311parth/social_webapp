@@ -339,7 +339,7 @@ function Post(props) {
                     {/* TODO: add link on click to navigate to profile page for below div */}
                     <div className="post-header">
                         <img
-                            src={`http://${backendurl}/api/v1/profile/profileImg/${props.uname}`}
+                            src={`https://${backendurl}/api/v1/profile/profileImg/${props.uname}`}
                             alt=""
                             id="post-header-profile-img"
                             loading="lazy"
@@ -368,10 +368,7 @@ function Post(props) {
                             </div>
                         </div>
                         <div className="post-img-container">
-                            <img id={`post-img-${props.seq}`} src={`http://${backendurl}/api/v1/media/image/post/${props.uname}/${props.seq}`} alt="" srcSet=""  onError={(e) => {
-                                e.preventDefault();
-                                e.target.style.display = "none";
-                                }} />
+                            <img id={`post-img-${props.seq}`} src={`https://${backendurl}/api/v1/media/image/post/${props.uname}/${props.seq}`} alt="" srcSet=""  />
                         </div>
                     </div>
                     <div className="interaction-container">

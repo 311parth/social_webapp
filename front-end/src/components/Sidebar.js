@@ -44,7 +44,7 @@ function Sidebar(props) {
               // console.log(key,value,typeof(key),typeof(value));
               <SidebarFollowCard
                 key={key}
-                imgsrc={`http://${backendurl}/api/v1/profile/profileImg/${value}`}
+                imgsrc={`https://${backendurl}/api/v1/profile/profileImg/${value}`}
                 username={value}
                 id={key}
               />

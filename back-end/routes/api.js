@@ -152,7 +152,6 @@ router
     res.json({ posted: 1 });
   })
 
-
   .get(authenticateToken, async (req, res) => {
     // console.log(req.query);
     try {

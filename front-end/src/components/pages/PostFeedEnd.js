@@ -4,7 +4,7 @@ function PostFeedEnd() {
     return (
         //TODO: style this 
         <>
-            <p>
+            <p style={{color:"white"}}>
                 All post covered , nothing new to show
             </p>
         </>

@@ -61,7 +61,7 @@ function ProfilePage(props) {
 
       //fetching following
       if (!usernameArray || urlQueryChange!==0) {
-        await fetch(`/api/v1/api/user?username=${queryUsername}`, {
+        await fetch(`/api/v1/api/user/followers?username=${queryUsername}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",

@@ -25,9 +25,14 @@ const login = require("./routes/login");
 const logout = require("./routes/logout");
 const api = require("./routes/api");
 const signup = require("./routes/signup");
-const profile = require("./routes/profile")
+const profile = require("./routes/profileImg")
 const media = require("./routes/media")
-
+const followRoute = require("./routes/api/follow")
+const unfollowRoute = require("./routes/api/unfollow");
+const profileRoute = require("./routes/api/profile")
+const postRoute = require("./routes/api/post");
+const interactionRoute = require("./routes/api/interaction")
+const userDetailRoute = require("./routes/api/user");
 const http = require("http")
 const server = http.createServer(app);
 
@@ -47,7 +52,12 @@ app.use("/api/v1/signup", signup);
 app.use("/api/v1/api", api);
 app.use("/api/v1/profile", profile);
 app.use("/api/v1/media", media);
-
+app.use("/api/v1/api/follow",followRoute);
+app.use("/api/v1/api/unfollow",unfollowRoute);
+app.use("/api/v1/api/profile",profileRoute);
+app.use("/api/v1/api/post",postRoute);
+app.use("/api/v1/api/interaction",interactionRoute);
+app.use("/api/v1/api/user",userDetailRoute);
 
 server.listen(process.env.PORT,()=>{
   console.log(`Server running on port ${process.env.PORT}`);

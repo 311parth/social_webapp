@@ -1,22 +1,16 @@
 const express = require("express");
 let router = express.Router();
-const { loginModel } = require("../model/loginModel");
-
+const loginDetailsServices = require("../services/loginDetailsServices");
 
 router.route("/").post(async (req, res) => {
   try {
-      
-    console.log(req.body);
-    console.log(req.body.signupUname);
-  
-    loginModel.findOne({ uname: req.body.signupUname }, (err, result) => {
-      if (err) throw err;
-      if (result) {
+    const reqUsername = req.body.signupUname;
+    const loginDetails = await loginDetailsServices.findOneByUsername(reqUsername)
+    if(loginDetails){
         res.json({ available: 0 });
-      } else {
-        res.json({ available: 1 });
-      }
-    });
+    }else{
+      res.json({available:1});
+    }
   } catch (error) {
     console.log(error)
   }

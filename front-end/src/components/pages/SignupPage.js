@@ -5,20 +5,31 @@ import { Link } from 'react-router-dom'
 
 function SignupPage() {
   const [errormsg, setErrormsg] = useState(2);
+  const [emptyFieldMsg,setemptyFieldMsg] = useState(2);
 
-  var name = "";
-  var uname = "";
-  var pw = "";
+  var signupNameTag =  document.getElementById("signupName");
+  var signupUnameTag =  document.getElementById("signupUname");
+  var signupPasswordTag =  document.getElementById("signupPassword");
+  var name = signupNameTag?signupNameTag.value : "";
+  var uname = signupUnameTag?signupUnameTag.value : "";
+  var pw = signupPasswordTag?signupPasswordTag.value : "";
 
   const checkSignUp = (event) => {
-    console.log(event);
+    // console.log(event);
     event.preventDefault();
     const body = {
       signupName: name,
       signupUname: uname,
       signupPassword: pw,
     };
-    console.log(JSON.stringify(body));
+    // console.log(JSON.stringify(body));
+    console.log(body);
+    if(!body.signupName || !body.signupUname || !body.signupPassword){
+      setemptyFieldMsg(1);
+      return;
+    }
+
+    setemptyFieldMsg(0);
     fetch("/api/v1/signup", {
       method: "POST",
       headers: {
@@ -57,6 +68,7 @@ function SignupPage() {
       <div className="loginFormContainer">
         <div className="loginFormMain">
           <h3>Signup</h3>
+          {emptyFieldMsg === 1 ? <h2 style={{color:"red"}}>Enter All Details</h2> : ""}    
 
           <form onSubmit={checkSignUp} className="loginForm">
             <li>
@@ -65,6 +77,7 @@ function SignupPage() {
                 className="signupInput"
                 type="text"
                 placeholder="Full name"
+                id="signupName"
                 onChange={(e) => {
                   name = e.target.value;
                 }}
@@ -77,6 +90,7 @@ function SignupPage() {
                 className="signupInput"
                 type="text"
                 placeholder="Username"
+                id="signupUname"
                 onChange={(e) => {
                   uname = e.target.value;
                 }}
@@ -89,6 +103,7 @@ function SignupPage() {
                 className="signupInput"
                 type="password"
                 placeholder="Password"
+                id="signupPassword"
                 onChange={(e) => {
                   pw = e.target.value;
                 }}
